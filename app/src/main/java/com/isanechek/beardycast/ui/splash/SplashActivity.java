@@ -55,6 +55,10 @@ public class SplashActivity extends AppCompatActivity {
         msg("onDestroy");
     }
 
+    public void showError() {
+
+    }
+
     public void showProgress(boolean show) {
         progress.setVisibility(show ? View.VISIBLE : View.INVISIBLE);
     }

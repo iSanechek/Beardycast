@@ -67,6 +67,18 @@ public class Repository implements Cloneable {
     }
 
     @UiThread
+    public Observable<Details> getArticle(@NonNull String url, @NonNull String podName, boolean podcast, boolean forceReload, boolean loadMore) {
+        /*Тут так, ибо нехер лесть в сеть когда не просят*/
+        if (forceReload) {
+            if (timeSinceLastNetworkRequest(url) > MINIMUM_NETWORK_WAIT_SEC) {
+                loader.testLoadData(url, realm, networkLoading, loadMore, podcast, podName);
+                lastNetworkRequest.put(url, System.currentTimeMillis());
+            }
+        }
+        return realm.where(Details.class).equalTo("idUrlArticle", url).findFirst().asObservable();
+    }
+
+    @UiThread
     public Observable<Podcast> getPodcast(@NonNull String url, boolean forceReload, String podName) {
         if (forceReload || timeSinceLastNetworkRequest(url) > MINIMUM_NETWORK_WAIT_SEC) {
             loader.loadData(url, realm, networkLoading, false, true, podName, false);

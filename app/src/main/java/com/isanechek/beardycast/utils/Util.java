@@ -53,4 +53,17 @@ public class Util {
     public static int dpToPix(int dp, DisplayMetrics metrics) {
         return (dp * metrics.densityDpi) / DisplayMetrics.DENSITY_DEFAULT;
     }
+
+    public static String getPodName(String name) {
+        if (name.contains("BeardyCast")) {
+            return ("BeardyCast");
+        } else if (name.contains("BEARDYCARS")) {
+            return ("BEARDYCARS");
+        } else if (name.contains("Theory")) {
+            return ("Theory");
+        } else if (name.contains("Crowd")) {
+            return ("Crowd");
+        }
+        return "";
+    }
 }

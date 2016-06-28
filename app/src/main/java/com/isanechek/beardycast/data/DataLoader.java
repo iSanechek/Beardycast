@@ -14,12 +14,13 @@ import com.isanechek.beardycast.realm.Podcast;
 import com.isanechek.beardycast.realm.model.ArtCategory;
 import com.isanechek.beardycast.realm.model.ArtTag;
 import com.isanechek.beardycast.realm.model.Article;
+import com.isanechek.beardycast.realm.model.details.DetailsModel;
+import com.isanechek.beardycast.realm.model.details.DetailsObject;
 import com.isanechek.beardycast.utils.Util;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 import io.realm.Realm;
 import io.realm.RealmList;
@@ -63,6 +64,10 @@ public class DataLoader {
             msg("podcast name -->> " + pN);
         }
         msg("------------------LOAD DATA >>END<<-----------------------");
+    }
+
+    public void testLoadData(String url, Realm realm, BehaviorSubject<Boolean> networkInUse, boolean loadMore, boolean podcast, String podName) {
+
     }
 
     private void loadArticle(String url, boolean loadMore) {
@@ -114,11 +119,14 @@ public class DataLoader {
             return;
         }
 
+        msg("--------------INSERT ARTICLE >>START<<-------------");
         long start = System.currentTimeMillis();
 
         for (ParserListModel plm : list) {
 
             Article object = realm.createObject(Article.class);
+
+            msg("article title -->> " + plm.getTitle());
 
             object.setArtTitle(plm.getTitle());
             object.setArtDescription(plm.getDescription());
@@ -132,21 +140,8 @@ public class DataLoader {
             object.setPodcast(plm.isPodcast());
 
             String podName = getPodName(plm.getTitle());
+            msg("podcast name -->> " + podName);
             object.setPodName(podName);
-
-//            if (plm.getTitle().contains("BeardyCast")) {
-//                object.setPodName("BeardyCast");
-//                msg("podName -->> BeardyCast");
-//            } else if (plm.getTitle().contains("BEARDYCARS")) {
-//                object.setPodName("BEARDYCARS");
-//                msg("podName -->> BEARDYCARS");
-//            } else if (plm.getTitle().contains("Theory")) {
-//                object.setPodName("Theory");
-//                msg("podName -->> Theory");
-//            } else if (plm.getTitle().contains("Crowd")) {
-//                object.setPodName("Crowd");
-//                msg("podName --> Crowd");
-//            }
 
             /**
              * Для таких умных как я!
@@ -165,6 +160,7 @@ public class DataLoader {
                 category.setCategoryName(model.getCategoryName());
                 category.setCategoryUrl(model.getCategoryUrl());
                 object.getCategory().add(category);
+                msg("category name -->> " + model.getCategoryName());
             }
 
             /*Insert Tags*/
@@ -175,15 +171,22 @@ public class DataLoader {
                 tag.setTagName(model.getTagName());
                 tag.setTagUrl(model.getTagUrl());
                 object.getTags().add(tag);
+                msg("tags name -->> " + model.getTagName());
             }
 
             if (first) {
                 object.setNewArticle(false);
                 object.setReadArticle(false);
+                msg("first TRUE");
+                msg("new article FALSE");
+                msg("read article FALSE");
             }
             else {
+                msg("first FALSE");
                 object.setNewArticle(true);
                 object.setReadArticle(false);
+                msg("new Article TRUE");
+                msg("read article FALSE");
             }
 
             object.setSavedArticle(false);
@@ -192,19 +195,27 @@ public class DataLoader {
         }
         long finish = System.currentTimeMillis() - start;
         msg("time insert article -->> " + finish);
+        msg("--------------INSERT ARTICLE >>END<<-------------");
     }
 
     private List<ParserListModel> checkNewItem(List<ParserListModel> list, RealmResults<Article> results) {
+        msg("--------------CHECK NEW ARTICLE >>START<<-------------");
+        msg("list size -->> " + list.size());
+        msg("result size -->> " + results.size());
         List<ParserListModel> cache = new ArrayList<>();
         if (cache.isEmpty() || cache.size() != 0) {
             cache.clear();
+            msg("cache clear");
         }
         for (int i = 0; i < list.size(); i++) {
             ParserListModel model = list.get(i);
             if (check(model.getLink(), results)) {
                 cache.add(model);
+                msg("cache add -->> " + model.getTitle());
             }
         }
+        msg("cache return size -->> " + cache.size());
+        msg("--------------CHECK NEW ARTICLE >>END<<-------------");
         return cache;
     }
 
@@ -219,6 +230,10 @@ public class DataLoader {
     /*---------------------------------DETAILS--------------------------------------*/
 
     private void loadDetails(String url, boolean podcast, String podName) {
+        msg("--------------DETAILS ARTICLE >>START<<-------------");
+        msg("url -->> " + url);
+        msg(podcast ? "podcast TRUE" : "podcast FALSE");
+        msg("podcast name -->> " + podName);
         networkInUse.onNext(true);
         api.getArticleDetails(url)
                 .subscribeOn(Schedulers.io())
@@ -226,6 +241,7 @@ public class DataLoader {
                 .subscribe(list -> {
                     networkInUse.onNext(false);
                     RealmResults<Details> results = realm.where(Details.class).findAll();
+                    msg("results size -->> " + results.size());
                     if (results.size() != list.size()) {
                         for (ParserModelArticle article : list) {
                             Details details = new Details();
@@ -241,9 +257,12 @@ public class DataLoader {
         if (podcast) {
             parseRss(podName);
         }
+        msg("--------------DETAILS ARTICLE >>END<<-------------");
     }
 
     private void parseRss(String name) {
+        msg("--------------PARSE RSS >>START<<-------------");
+        msg("name -->> " + name);
         // Если первая загрузка, то грузим весь rss
         // Иначе первые N kb
         String url = null;
@@ -265,20 +284,30 @@ public class DataLoader {
                 }, throwable -> {
                     networkInUse.onNext(false);
                 });
+
+        msg("--------------PARSE RSS >>END<<-------------");
     }
 
     private void insertPodcast(ArrayList<RssItemParser> list, String id) {
-
+        msg("--------------INSERT PODCAST >>START<<-------------");
+        msg("rss items size -->> " + list.size());
+        msg("podcast id -->> " + id);
         RealmResults<Podcast> results = realm.where(Podcast.class).findAllAsync();
+        msg("results size -->> " + results.size());
         if (results.size() == 0) {
             insert(list, id);
+            msg("first insert");
         } else {
+            msg("update insert");
             List<RssItemParser> list1 = checkHeraks(list, results);
+            msg("list1 size -->. " + list1.size());
             insert(list1, id);
         }
+        msg("--------------INSERT PODCAST >>END<<-------------");
     }
 
     private void insert(List<RssItemParser> rssItemParsers, String id) {
+        msg("--------------INSERT >>START<<-------------");
         if (rssItemParsers.isEmpty()) return;
 
         long start = System.currentTimeMillis();
@@ -302,20 +331,35 @@ public class DataLoader {
 
         long finish = System.currentTimeMillis() - start;
         msg("time insert podcast -->> " + finish);
-
-
+        msg("--------------INSERT >>END<<-------------");
     }
 
     private List<RssItemParser> checkHeraks(List<RssItemParser> parserList, RealmResults<Podcast> realmList) {
+        msg("--------------CHECK HERAKS >>START<<-------------");
+        msg("parse list size -->> " + parserList.size());
+        msg("realm list size -->> " + realmList.size());
         List<RssItemParser> cache = new ArrayList<>();
         if (cache.isEmpty() || cache.size() != 0) {
             cache.clear();
+            msg("cache clear");
         }
         for (int i = 0; i < parserList.size(); i++) {
             RssItemParser model = parserList.get(i);
             if (checkH(model.getMp3url(), realmList)) {
                 cache.add(model);
+                msg("cache add -->> " + model.getTitle());
             }
+        }
+        msg("cache return size -->> " + cache.size());
+        msg("--------------CHECK HERAKS >>END<<-------------");
+        return cache;
+    }
+
+    private List<?> testCheck(List<?> listNetwork, RealmResults<?> listDB) {
+        List<?> cache = new ArrayList<>();
+        if (cache.isEmpty() || cache.size() != 0) {
+            cache.clear();
+            msg("cache clear");
         }
         return cache;
     }
@@ -346,7 +390,71 @@ public class DataLoader {
         return "";
     }
 
-    /*FIRST START*/
+    private void testLoadDetails(String url, boolean podcast, String podName) {
+        msg("--------------TEST LOAD DETAILS ARTICLE >>START<<-------------");
+        msg("url -->> " + url);
+        msg(podcast ? "podcast TRUE" : "podcast FALSE");
+        msg("podcast name -->> " + podName);
+
+        networkInUse.onNext(true);
+        api.getArticleDetails(url)
+                .observeOn(Schedulers.io())
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe(list -> {
+                    networkInUse.onNext(false);
+                    insertDetails(list, podcast, podName, url);
+                }, throwable -> {
+                    networkInUse.onNext(false);
+                    msg("Error load details -->> " + throwable.getMessage());
+                });
+
+        msg("--------------TEST LOAD DETAILS ARTICLE >>END<<-------------");
+    }
+
+    private void insertDetails(List<ParserModelArticle> list, boolean podcast, String  podName, String url) {
+        msg("--------------INSERT DETAILS ARTICLE >>START<<-------------");
+
+        DetailsModel details = new DetailsModel();
+        details.setIdUrlArticle(url);
+        msg("id art -->> " + url);
+        details.setObjects(new RealmList<>());
+        for (ParserModelArticle article : list) {
+            DetailsObject object = new DetailsObject();
+            object.setObject(article.getContentObj());
+            details.getObjects().add(object);
+        }
+
+        realm.executeTransaction(r -> r.copyToRealmOrUpdate(details));
+
+
+        if (podcast) {
+            String link = null;
+            if (podName.contains("BEARDYCARS")) {
+                link = Constants.PODCAST_BEARDYCARS_RSS;
+            } else if (podName.contains("BeardyCast")) {
+                link = Constants.PODCAST_BEARDYCAST_RSS;
+            }
+            msg("link -->> " + link);
+
+            networkInUse.onNext(true);
+            api.getListPodcast(link)
+                    .observeOn(Schedulers.io())
+                    .subscribeOn(AndroidSchedulers.mainThread())
+                    .subscribe(rssItemParsers -> {
+                        networkInUse.onNext(false);
+                        insertPodcastN(rssItemParsers, url);
+                    }, error -> {
+                        msg("podcast -->> " + error.getMessage());
+                    });
+
+        }
+        msg("--------------INSERT DETAILS ARTICLE >>END<<-------------");
+    }
+
+    private void insertPodcastN(ArrayList<RssItemParser> list, String url) {
+
+
+    }
 
     private void msg(String text) {
         Log.d(TAG, text);

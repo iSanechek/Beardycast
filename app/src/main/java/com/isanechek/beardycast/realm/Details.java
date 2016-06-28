@@ -12,14 +12,6 @@ public class Details extends RealmObject {
     private String idUrlArticle;
     private String obj;
 
-    public Details(String idUrlArticle, String obj) {
-        this.idUrlArticle = idUrlArticle;
-        this.obj = obj;
-    }
-
-    public Details() {
-    }
-
     public String getIdUrlArticle() {
         return idUrlArticle;
     }
