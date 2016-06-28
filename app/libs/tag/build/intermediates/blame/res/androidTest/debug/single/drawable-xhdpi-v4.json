@@ -1,0 +1,10 @@
+[
+    {
+        "merged": "/home/isanechek/Projects/Beardycast/app/libs/tag/build/intermediates/res/merged/androidTest/debug/drawable-xhdpi-v4/ic_launcher.png",
+        "source": "/home/isanechek/Projects/Beardycast/app/libs/tag/build/intermediates/bundles/debug/res/drawable-xhdpi-v4/ic_launcher.png"
+    },
+    {
+        "merged": "/home/isanechek/AndroidProjects/Beardycast/app/libs/tag/build/intermediates/res/merged/androidTest/debug/drawable-xhdpi-v4/ic_launcher.png",
+        "source": "/home/isanechek/AndroidProjects/Beardycast/app/libs/tag/build/intermediates/bundles/debug/res/drawable-xhdpi-v4/ic_launcher.png"
+    }
+]
