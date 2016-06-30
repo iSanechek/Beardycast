@@ -128,5 +128,5 @@ dependencies {
     compile 'com.androidadvance:topsnackbar:0.0.9'
     compile 'com.github.fcannizzaro:fast-event:0.1.3'
     compile 'com.webianks.library:popup-bubble:1.0.2'
-    compile 'com.gospelware.liquidbutton:liquidButtonLib:1.1.3'
+    compile 'com.github.Snakeice:RebDroid:v1.0'
 }

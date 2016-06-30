@@ -1,5 +1,6 @@
 package com.isanechek.beardycast.ui.splash;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -8,6 +9,8 @@ import android.view.View;
 import android.widget.ProgressBar;
 
 import com.isanechek.beardycast.R;
+import com.isanechek.beardycast.ui.articlelist.ListArtActivity;
+import com.isanechek.beardycast.utils.Util;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -61,6 +64,14 @@ public class SplashActivity extends AppCompatActivity {
 
     public void showProgress(boolean show) {
         progress.setVisibility(show ? View.VISIBLE : View.INVISIBLE);
+    }
+
+    private void startArticleListActivity() {
+        startActivity(new Intent(SplashActivity.this, ListArtActivity.class));
+        if (Util.isAndroid5Plus())
+            finishAfterTransition();
+        else
+            finish();
     }
 
     private void msg(String s) {

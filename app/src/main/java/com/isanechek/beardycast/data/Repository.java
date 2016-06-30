@@ -102,7 +102,11 @@ public class Repository implements Cloneable {
     public Observable<Article> getArticle(@NonNull String id) {
         return realm.where(Article.class).equalTo("artLink", id).findFirstAsync().asObservable();
     }
-    
+
+    @UiThread
+    public void firstStart() {
+
+    }
 
     @UiThread
     public void close() {

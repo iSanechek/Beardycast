@@ -62,6 +62,10 @@ public class Model {
         return repository.networkInUse().distinctUntilChanged();
     }
 
+    public void firstStart() {
+        repository.firstStart();
+    }
+
     /**
      * Returns all sections available.
      *
