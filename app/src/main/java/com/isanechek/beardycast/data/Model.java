@@ -3,7 +3,9 @@ package com.isanechek.beardycast.data;
 import android.support.annotation.NonNull;
 
 import com.isanechek.beardycast.Constants;
-import com.isanechek.beardycast.realm.model.Article;
+import com.isanechek.beardycast.data.model.podcast.Podcast;
+import com.isanechek.beardycast.data.model.article.Article;
+import com.isanechek.beardycast.data.model.details.DetailsModel;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -49,13 +51,16 @@ public class Model {
         repository.getAllArticles(selectedSection, true, false);
     }
 
-    public void loadMoreArticle() {
-        repository.getAllArticles(getPageLoadedCount(), true, true);
-
-    }
-
     public Observable<Article> getArticle(@NonNull String id) {
         return repository.getArticle(id);
+    }
+
+    public Observable<DetailsModel> getArticleDetails(String id) {
+        return repository.getArticleDetails(id, false);
+    }
+
+    public Observable<Podcast> getPodcast(@NonNull String id, @NonNull String podcastName) {
+        return repository.getPodcast(id, false, podcastName);
     }
 
     public Observable<Boolean> isNetworkUsed() {

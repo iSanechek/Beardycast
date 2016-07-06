@@ -26,8 +26,8 @@ import com.isanechek.beardycast.R;
 import com.isanechek.beardycast.data.Model;
 import com.isanechek.beardycast.data.parser.Parser;
 import com.isanechek.beardycast.data.parser.model.details.ParserModelArticle;
-import com.isanechek.beardycast.realm.model.ArtCategory;
-import com.isanechek.beardycast.realm.model.Article;
+import com.isanechek.beardycast.data.model.article.ArtCategory;
+import com.isanechek.beardycast.data.model.article.Article;
 import com.isanechek.beardycast.ui.imageviewer.ImageViewer;
 import com.isanechek.beardycast.utils.LogUtil;
 

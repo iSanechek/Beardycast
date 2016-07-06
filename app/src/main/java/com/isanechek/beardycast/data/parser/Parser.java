@@ -2,6 +2,7 @@ package com.isanechek.beardycast.data.parser;
 
 import android.util.Log;
 
+import com.annimon.stream.Stream;
 import com.isanechek.beardycast.Constants;
 import com.isanechek.beardycast.data.network.OkHelper;
 import com.isanechek.beardycast.data.parser.model.details.ParserModelArticle;
@@ -77,8 +78,8 @@ public class Parser {
                 calendar.add(Calendar.SECOND, seconds);
 
                 Date resultDate = calendar.getTime();
-                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                msg("Check date --> " + dateFormat.format(resultDate.getTime()));
+//                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//                msg("Check date --> " + dateFormat.format(resultDate.getTime()));
 
                 /*category*/
                 Element category = element.getElementsByClass("article-category").first();
@@ -123,22 +124,27 @@ public class Parser {
         return null;
     }
 
-    public static List<ParserModelArticle> getArticle(String url) {
-        ArrayList<ParserModelArticle> cache = new ArrayList<>();
+    public static List<String> getArticle(String url) {
+//        ArrayList<ParserModelArticle> cache = new ArrayList<>();
+        List<String> cache = new ArrayList<>();
 
         String body = OkHelper.getBody(url);
         if (body != null) {
             Document document = Jsoup.parse(body);
             Element element = document.getElementsByClass("article-entry").first();
             Elements elements = element.select("p");
-            for (Element obj : elements) {
-                if (checkImg(backString(obj))) {
-                    cache.add(new ParserModelArticle(tryUrl(backString(obj))));
-                }
-                else {
-                    cache.add(new ParserModelArticle(obj.text()));
-                }
-            }
+//            for (Element obj : elements) {
+//                if (checkImg(backString(obj))) {
+//                    cache.add(new ParserModelArticle(tryUrl(backString(obj))));
+//                }
+//                else {
+//                    cache.add(new ParserModelArticle(obj.text()));
+//                }
+//            }
+
+            Stream.of(elements)
+                    .map(Element::toString)
+                    .forEach(cache::add);
             return cache;
         }
         return null;

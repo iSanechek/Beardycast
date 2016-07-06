@@ -10,12 +10,12 @@ import com.isanechek.beardycast.data.parser.model.list.ParserListModel;
 import com.isanechek.beardycast.data.parser.model.list.ParserListTagModel;
 import com.isanechek.beardycast.data.rss.RssItemParser;
 import com.isanechek.beardycast.realm.Details;
-import com.isanechek.beardycast.realm.Podcast;
-import com.isanechek.beardycast.realm.model.ArtCategory;
-import com.isanechek.beardycast.realm.model.ArtTag;
-import com.isanechek.beardycast.realm.model.Article;
-import com.isanechek.beardycast.realm.model.details.DetailsModel;
-import com.isanechek.beardycast.realm.model.details.DetailsObject;
+import com.isanechek.beardycast.data.model.podcast.Podcast;
+import com.isanechek.beardycast.data.model.article.ArtCategory;
+import com.isanechek.beardycast.data.model.article.ArtTag;
+import com.isanechek.beardycast.data.model.article.Article;
+import com.isanechek.beardycast.data.model.details.DetailsModel;
+import com.isanechek.beardycast.data.model.details.DetailsObject;
 import com.isanechek.beardycast.utils.Util;
 
 import java.util.ArrayList;
@@ -30,7 +30,6 @@ import rx.schedulers.Schedulers;
 import rx.subjects.BehaviorSubject;
 
 import static com.isanechek.beardycast.utils.UrlUtil.getPageLoadedCount;
-import static com.isanechek.beardycast.utils.UrlUtil.savePageLoadedCount;
 
 /**
  * Created by isanechek on 04.05.16.
@@ -42,6 +41,8 @@ public class DataLoader {
     private Realm realm;
     private BehaviorSubject<Boolean> networkInUse;
 
+//    private NetworkManager manager;
+
     public DataLoader() {
         api = ApiImpl.getInstance();
     }
@@ -49,6 +50,7 @@ public class DataLoader {
     public void loadData(String url, Realm realm, BehaviorSubject<Boolean> networkInUse, boolean details, boolean podcast, String pN, boolean loadMore) {
         this.realm = realm;
         this.networkInUse = networkInUse;
+//        this.manager = new NetworkManager();
         msg("-----------------LOAD DATA >>START<<----------------------");
         if (!details) {
             loadArticle(url, loadMore);
@@ -73,7 +75,7 @@ public class DataLoader {
         msg("--------------LOAD ARTICLE >>START<<-------------");
         msg(loadMore ? "load more TRUE" : "load more FALSE");
         if (loadMore) {
-            url = url + getPageLoadedCount();
+//            url = url + getPageLoadedCount();
         }
         msg("url -->> " + url);
         networkInUse.onNext(true);
@@ -81,31 +83,30 @@ public class DataLoader {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(parserListModels -> {
-                    processAndAddData(parserListModels);
+                    processAndAddData(parserListModels, loadMore);
                     networkInUse.onNext(false);
                 }, throwable -> {
                     networkInUse.onNext(false);
+                    msge("Error -->> " + throwable.toString());
                 });
         msg("--------------LOAD ARTICLE >>END<<-------------");
     }
 
-    private void processAndAddData(final List<ParserListModel> list) {
+    private void processAndAddData(final List<ParserListModel> list, boolean loadMore) {
         msg("--------------PROCESS AND ADD DATE >>START<<-------------");
         if (list.isEmpty()) return;
 
         msg("list size -->> " + list.size());
 
-        savePageLoadedCount();
-
         realm.executeTransaction(realm1 -> {
             RealmResults<Article> models = realm1.where(Article.class).findAll();
             if (models.size() == 0) {
-                insertDate(list, true);
+                insertDate(list, true, loadMore);
                 msg("insert");
                 msg("models size");
             }
             else {
-                insertDate(checkNewItem(list, models), false);
+                insertDate(checkNewItem(list, models), false, loadMore);
             }
         });
 
@@ -113,7 +114,7 @@ public class DataLoader {
 
     }
 
-    private void insertDate(List<ParserListModel> list, boolean first) {
+    private void insertDate(List<ParserListModel> list, boolean first, boolean loadMore) {
         if (list.isEmpty() || list.size() == 0) {
             return;
         }
@@ -173,7 +174,7 @@ public class DataLoader {
                 msg("tags name -->> " + model.getTagName());
             }
 
-            if (first) {
+            if (first || loadMore) {
                 object.setNewArticle(false);
                 object.setReadArticle(false);
                 msg("first TRUE");
@@ -190,7 +191,7 @@ public class DataLoader {
 
             object.setSavedArticle(false);
 
-            realm.copyToRealm(object);
+            realm.executeTransaction(r -> r.copyToRealmOrUpdate(object));
         }
         long finish = System.currentTimeMillis() - start;
         msg("time insert article -->> " + finish);
@@ -242,15 +243,16 @@ public class DataLoader {
                     RealmResults<Details> results = realm.where(Details.class).findAll();
                     msg("results size -->> " + results.size());
                     if (results.size() != list.size()) {
-                        for (ParserModelArticle article : list) {
-                            Details details = new Details();
-                            details.setIdUrlArticle(url);
-                            details.setObj(article.getContentObj());
-                            realm.executeTransaction(realm1 -> realm1.copyToRealmOrUpdate(details));
-                        }
+//                        for (ParserModelArticle article : list) {
+//                            Details details = new Details();
+//                            details.setIdUrlArticle(url);
+//                            details.setObj(article.getContentObj());
+//                            realm.executeTransaction(realm1 -> realm1.copyToRealmOrUpdate(details));
+//                        }
                     }
                 }, throwable -> {
                     networkInUse.onNext(false);
+                    msge("Error -->> " + throwable.toString());
                 });
 
         if (podcast) {
@@ -282,6 +284,7 @@ public class DataLoader {
                     networkInUse.onNext(false);
                 }, throwable -> {
                     networkInUse.onNext(false);
+                    msge("Error -->> " + throwable.toString());
                 });
 
         msg("--------------PARSE RSS >>END<<-------------");
@@ -401,7 +404,7 @@ public class DataLoader {
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe(list -> {
                     networkInUse.onNext(false);
-                    insertDetails(list, podcast, podName, url);
+//                    insertDetails(list, podcast, podName, url);
                 }, throwable -> {
                     networkInUse.onNext(false);
                     msg("Error load details -->> " + throwable.getMessage());
@@ -457,6 +460,10 @@ public class DataLoader {
 
     private void msg(String text) {
         Log.d(TAG, text);
+    }
+
+    private void msge(String s) {
+        Log.e(TAG, s);
     }
 
 }

@@ -4,23 +4,20 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.PowerManager;
 
 import com.isanechek.beardycast.R;
-import com.isanechek.beardycast.realm.Podcast;
+import com.isanechek.beardycast.data.model.podcast.Podcast;
 
-import java.util.ArrayList;
 import java.util.Random;
 
 import io.realm.Realm;

@@ -1,33 +1,20 @@
 package com.isanechek.beardycast.ui.podcast;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.transition.TransitionManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
-import android.widget.Button;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
 import com.isanechek.beardycast.App;
-import com.isanechek.beardycast.Constants;
 import com.isanechek.beardycast.R;
-import com.isanechek.beardycast.data.Model;
-import com.isanechek.beardycast.realm.ArticleDetails;
-import com.isanechek.beardycast.realm.model.Article;
+import com.isanechek.beardycast.data.model.article.Article;
 import com.isanechek.beardycast.ui.podcast.fragments.PodcastFragment;
 import com.isanechek.beardycast.ui.podcast.fragments.PodcastInfoFragment;
 

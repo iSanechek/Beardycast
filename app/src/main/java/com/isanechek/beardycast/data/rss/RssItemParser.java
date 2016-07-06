@@ -3,17 +3,12 @@ package com.isanechek.beardycast.data.rss;
 import android.util.Log;
 
 import com.isanechek.beardycast.data.network.OkHelper;
-import com.isanechek.beardycast.data.network.OkHttp;
-import com.isanechek.beardycast.utils.Util;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -24,8 +19,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 public class RssItemParser {
-    private static final int REFRESH_TIMEOUT_MILLIS = 50000;
-
     private String title = null;
     private Date pubDate = null;
     private String length = null;
@@ -68,25 +61,10 @@ public class RssItemParser {
 
     public static ArrayList<RssItemParser> getRssItems(String feedUrl) {
 
-        InputStream is = null;
+        InputStream is;
         ArrayList<RssItemParser> rssItemParsers = new ArrayList<>();
 
         try {
-//            URL url = new URL(feedUrl);
-//            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-//
-//            conn.setConnectTimeout(REFRESH_TIMEOUT_MILLIS);
-//            conn.setReadTimeout(REFRESH_TIMEOUT_MILLIS);
-
-//            AssetManager manager = context.getAssets();
-//            InputStream is = manager.open("BeardycarsRss.xml");
-
-//            if (conn.getResponseCode() == HttpURLConnection.HTTP_OK) {
-//                InputStream is = conn.getInputStream();
-//
-//
-//            }
-
             is = OkHelper.getStream(feedUrl);
             DocumentBuilderFactory dbf = DocumentBuilderFactory
                     .newInstance();
@@ -110,7 +88,6 @@ public class RssItemParser {
                             .getElementsByTagName("enclosure").item(0);
 
                     String _title = _titleE.getFirstChild().getNodeValue();
-//                        Date _pubDate = new Date(_pubDateE.getFirstChild().getNodeValue());
                     String date = _pubDateE.getFirstChild().getNodeValue();
 
                     DateFormat df = new SimpleDateFormat("dd MMM yyyy");

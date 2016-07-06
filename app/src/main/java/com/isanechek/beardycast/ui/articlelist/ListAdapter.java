@@ -11,10 +11,8 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.devspark.robototextview.widget.RobotoTextView;
 import com.isanechek.beardycast.R;
-import com.isanechek.beardycast.realm.model.ArtTag;
-import com.isanechek.beardycast.realm.model.Article;
-import com.isanechek.beardycast.ui.detail.DetailsActivity;
-import com.isanechek.beardycast.ui.podcast.PodcastActivity;
+import com.isanechek.beardycast.data.model.article.ArtTag;
+import com.isanechek.beardycast.data.model.article.Article;
 import com.isanechek.beardycast.utils.Util;
 
 import butterknife.BindView;
@@ -24,9 +22,6 @@ import io.realm.RealmResults;
 import io.realm.RealmViewHolder;
 import me.kaede.tagview.Tag;
 import me.kaede.tagview.TagView;
-
-import static com.isanechek.beardycast.ui.detail.DetailsActivity.startDetailsIntent;
-import static com.isanechek.beardycast.ui.podcast.PodcastActivity.startPodcastActivity;
 
 public class ListAdapter extends RealmBasedRecyclerViewAdapter<Article, ListAdapter.ViewHolder> {
 
@@ -103,7 +98,7 @@ public class ListAdapter extends RealmBasedRecyclerViewAdapter<Article, ListAdap
                     .into(pic);
 
             cardView.setOnClickListener(v -> {
-                com.isanechek.beardycast.ui.details.DetailsActivity.startActivity(itemView.getContext(), article);
+//                com.isanechek.beardycast.ui.details.DetailsActivity.startActivity(itemView.getContext(), article);
 //                if (article.isPodcast())
 //                    startPodcastActivity(itemView.getContext(), article);
 //                else

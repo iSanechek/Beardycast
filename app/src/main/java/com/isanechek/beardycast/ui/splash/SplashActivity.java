@@ -34,7 +34,6 @@ public class SplashActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         msg("HELLO");
         presenter = new SplashPresenter(this);
-
     }
 
     @Override

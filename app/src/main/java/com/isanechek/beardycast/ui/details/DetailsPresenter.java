@@ -3,12 +3,24 @@ package com.isanechek.beardycast.ui.details;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.annimon.stream.Stream;
 import com.isanechek.beardycast.data.Model;
+import com.isanechek.beardycast.data.ModelT;
 import com.isanechek.beardycast.data.api.ApiImpl;
+import com.isanechek.beardycast.data.model.podcast.Podcast;
+import com.isanechek.beardycast.data.model.details.DetailsModel;
+import com.isanechek.beardycast.data.model.details.DetailsObject;
+import com.isanechek.beardycast.data.parser.model.details.ParserModelArticle;
 import com.isanechek.beardycast.ui.Presenter;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import rx.Scheduler;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
+import rx.schedulers.Schedulers;
 
 import static com.isanechek.beardycast.utils.LogUtil.logD;
 
@@ -19,59 +31,65 @@ public class DetailsPresenter implements Presenter {
     private static final String TAG = "DetailsPresenter";
 
     private final DetailsActivity view;
-    private final Model model;
+    private final ModelT model;
     private final String id;
-
-    private Subscription loaderSubscription;
-    private Subscription dataSubscription;
-    private Subscription detailsSubscription;
-    private ApiImpl api = new ApiImpl();
+    private List<Subscription> subscriptions;
+    private ApiImpl api;
 
 
-    public DetailsPresenter(DetailsActivity view, Model model, String id) {
+    public DetailsPresenter(DetailsActivity view, ModelT model, String id) {
         this.view = view;
         this.model = model;
         this.id = id;
+        api = new ApiImpl();
     }
 
     @Override
     public void onCreate() {
         logD(TAG, "onCreate");
+        subscriptions = new ArrayList<>();
     }
 
     @Override
     public void onResume() {
         logD(TAG, "onResume");
-        loaderSubscription = model.isNetworkUsed().subscribe(view::showProgress);
+        subscriptions.add(model.isNetworkUsed()
+                .subscribe(view::showProgress));
         loadData(id);
     }
+
 
     @Override
     public void onPause() {
         logD(TAG, "onPause");
-        if (dataSubscription != null)
-            dataSubscription.unsubscribe();
+        unSubscribeAll();
     }
 
     @Override
     public void onDestroy() {
         logD(TAG, "onDestroy");
-        if (dataSubscription != null)
-            dataSubscription.unsubscribe();
-
     }
 
     private void loadData(@NonNull String url) {
         logD(TAG, "loadData");
-        if (dataSubscription != null) {
-            dataSubscription.unsubscribe();
-        }
 
-        dataSubscription = model.getArticle(url)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(view::testCreate, throwable -> {
-                    Log.e("load Data", "error -->> " + throwable.toString());
-//                    view.showErrorView();
-                });
+        subscriptions.add(model.getArticle(url)
+                .subscribe(view::loadView, view::showErrorView));
+
+        loadDetails(url);
+
+    }
+
+    private void loadDetails(String url) {
+        subscriptions.add(api.getArticleDetails(url)
+        .observeOn(Schedulers.io())
+        .subscribeOn(AndroidSchedulers.mainThread())
+        .subscribe(view::createView, view::showErrorView));
+    }
+
+    private void unSubscribeAll() {
+        Stream.of(subscriptions)
+                .filter(subscription -> !subscription.isUnsubscribed())
+                .forEach(Subscription::unsubscribe);
     }
 }

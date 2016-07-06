@@ -92,12 +92,12 @@ public class DetailsPresenter implements Presenter {
             detailsSubscription.unsubscribe();
 
         // load details content
-
-        detailsSubscription = api.getArticleDetails(id)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(view::createUI, throwable -> {
-                    logE("load Details", "error -->> " + throwable.toString());
-                });
+//
+//        detailsSubscription = api.getArticleDetails(id)
+//                .subscribeOn(Schedulers.io())
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe(view::createUI, throwable -> {
+//                    logE("load Details", "error -->> " + throwable.toString());
+//                });
     }
 }

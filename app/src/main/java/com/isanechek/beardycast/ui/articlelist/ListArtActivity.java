@@ -3,20 +3,34 @@ package com.isanechek.beardycast.ui.articlelist;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ProgressBar;
+import android.widget.Spinner;
 
+import com.annimon.stream.Stream;
 import com.isanechek.beardycast.App;
 import com.isanechek.beardycast.R;
-import com.isanechek.beardycast.data.Model;
-import com.isanechek.beardycast.realm.model.Article;
+import com.isanechek.beardycast.data.ModelT;
+import com.isanechek.beardycast.data.model.article.Article;
 import com.isanechek.beardycast.ui.podcast.PodcastActivity;
 
+import java.util.List;
+
+import butterknife.BindView;
 import butterknife.ButterKnife;
-import co.moonmonkeylabs.realmrecyclerview.RealmRecyclerView;
+import butterknife.Unbinder;
+import io.realm.RealmList;
 import io.realm.RealmResults;
 
 public class ListArtActivity extends AppCompatActivity {
@@ -24,26 +38,36 @@ public class ListArtActivity extends AppCompatActivity {
     private static final int LAYOUT = R.layout.main_activity;
     private static final String RECYCLER_VIEW_STATE = "recycler_view_state";
 
-    RealmRecyclerView recyclerView;
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
+    @BindView(R.id.spinner)
+    Spinner spinner;
+    @BindView(R.id.refresh_layout)
+    SwipeRefreshLayout refreshLayout;
+    @BindView(R.id.article_list)
+    RecyclerView recyclerView;
+    @BindView(R.id.progressBar)
+    ProgressBar progress;
 
-    private Toolbar toolbar;
+    private Unbinder unbinder;
+    private ListTAdapter adapter;
 
-    ListArtPresenter presenter = new ListArtPresenter(this, Model.getInstance());
+    private ListArtPresenter presenter = new ListArtPresenter(this, ModelT.getInstance());
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(LAYOUT);
         msg("HELLO");
-//        ButterKnife.bind(this);
-
+        unbinder = ButterKnife.bind(this);
         App.getRefWAtcher(this);
 
-        toolbar = ButterKnife.findById(this, R.id.toolbar);
         setSupportActionBar(toolbar);
-        toolbar.setTitle("");
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
 
-        initRecyclerView();
+        adapter = null;
+
+        initView();
 
         presenter.onCreate();
 
@@ -66,6 +90,7 @@ public class ListArtActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         presenter.onDestroy();
+        unbinder.unbind();
     }
 
     @Override
@@ -97,38 +122,85 @@ public class ListArtActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void initRecyclerView() {
-        recyclerView = ButterKnife.findById(this, R.id.realm_recycler_view);
-        recyclerView.setOnRefreshListener(() -> presenter.refreshList());
-        recyclerView.setOnLoadMoreListener(o -> {
-            msg("LOAD MORE");
-            presenter.loadMore();
+    public void configureToolbar(List<String> sections) {
+        String[] sectionList = sections.toArray(new String[sections.size()]);
+        final ArrayAdapter adapter = new ArrayAdapter<CharSequence>(getApplicationContext(), android.R.layout.simple_spinner_dropdown_item, sectionList);
+        spinner.setAdapter(adapter);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                presenter.titleSpinnerSectionSelected((String) adapter.getItem(position));
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
         });
     }
 
-    public void showLoadMore() {
-        recyclerView.enableShowLoadMore();
+    private void initView() {
+        refreshLayout.setColorSchemeResources(ContextCompat.getColor(this, R.color.colorAccent),
+                ContextCompat.getColor(this, R.color.colorPrimaryDark),
+                ContextCompat.getColor(this, R.color.colorAccent),
+                ContextCompat.getColor(this, R.color.colorPrimaryDark));
+        refreshLayout.setOnRefreshListener(() -> {
+            refreshLayout.setRefreshing(true);
+            recyclerView.smoothScrollToPosition(0);
+            presenter.refreshList();
+        });
     }
 
-    public void hideLoadMore() {
-        recyclerView.disableShowLoadMore();
+    public void loadMore(RealmResults<Article> list) {
+
+        adapter.getListArticle().add(null);
+        adapter.notifyItemInserted(adapter.getListArticle().size() - 1);
+
+        final int currentSize = adapter.getItemCount();
+        adapter.getListArticle().remove(adapter.getListArticle().size() - 1);
+        adapter.notifyItemRemoved(adapter.getListArticle().size());
+        adapter.setLoaded();
+
+        adapter.getListArticle().addAll(getList(list));
+        adapter.notifyItemRangeInserted(currentSize, currentSize + 10);
     }
 
     public void showList(RealmResults<Article> list) {
-        ListAdapter listAdapter = new ListAdapter(this, list, true, true);
-        recyclerView.setAdapter(listAdapter);
-        listAdapter.notifyDataSetChanged();
-    }
 
-    public void hideRefreshing() {
-        recyclerView.setRefreshing(false);
+        msg("Realm Result -->> " + list.size());
+
+        adapter = new ListTAdapter();
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        adapter.bindRecyclerView(recyclerView);
+        adapter.setOnLoadMoreListener(() -> presenter.loadMore());
+        recyclerView.setAdapter(adapter);
+        adapter.setArticleList(getList(list));
+        adapter.notifyDataSetChanged();
+
     }
 
     public void showNetworkLoading(Boolean networkInUse) {
-//        progress.setVisibility(networkInUse ? View.VISIBLE : View.INVISIBLE);
+        progress.setVisibility(networkInUse ? View.VISIBLE : View.INVISIBLE);
+        if (!networkInUse) {
+            if (refreshLayout.isRefreshing()) {
+                refreshLayout.setRefreshing(false);
+            }
+        }
+    }
+
+    private RealmList<Article> getList(RealmResults<Article> articles) {
+        RealmList<Article> list = new RealmList<>();
+        list.clear();
+        Stream.of(articles).forEach(list::add);
+        return list;
     }
 
     private void msg(String text) {
         Log.d(TAG, text);
+    }
+
+    public void showErrorMessage(Throwable throwable) {
+        Log.e(TAG, "showErrorMessage: ", throwable);
     }
 }

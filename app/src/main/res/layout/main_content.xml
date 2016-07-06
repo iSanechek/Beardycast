@@ -11,11 +11,21 @@
     tools:context=".ui.articlelist.ListArtActivity"
     tools:showIn="@layout/main_activity">
 
-    <co.moonmonkeylabs.realmrecyclerview.RealmRecyclerView
-        android:id="@+id/realm_recycler_view"
+    <!--<co.moonmonkeylabs.realmrecyclerview.RealmRecyclerView-->
+        <!--android:id="@+id/realm_recycler_view"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--app:rrvIsRefreshable="true"-->
+        <!--app:rrvLayoutType="LinearLayout"-->
+        <!--app:rrvEmptyLayoutId="@layout/empty_view" />-->
+
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/refresh_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:rrvIsRefreshable="true"
-        app:rrvLayoutType="LinearLayout"
-        app:rrvEmptyLayoutId="@layout/empty_view" />
+        android:layout_height="match_parent">
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/article_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </android.support.v4.widget.SwipeRefreshLayout>
 </RelativeLayout>

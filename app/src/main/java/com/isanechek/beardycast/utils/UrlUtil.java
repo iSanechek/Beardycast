@@ -12,17 +12,17 @@ import com.isanechek.beardycast.Constants;
  */
 public class UrlUtil {
 
-    public static String getPageLoadedCount() {
+    public static String getPageLoadedCount(String id) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(App.getContext());
-        return Constants.LINK_MORE + preferences.getInt(Constants.PAGE_MORE_COUNT, 1) + "/";
+        return Constants.LINK_MORE + preferences.getInt(id, 1) + "/";
     }
 
-    public static void savePageLoadedCount() {
+    public static void savePageLoadedCount(String id) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(App.getContext());
-        int count = preferences.getInt(Constants.PAGE_MORE_COUNT, 1);
+        int count = preferences.getInt(id, 1);
         Log.d("URL Util", "count " + count);
         count++;
-        preferences.edit().putInt(Constants.PAGE_MORE_COUNT, count).apply();
+        preferences.edit().putInt(id, count).apply();
     }
 
     public static String tryUrl(String url) {
