@@ -124,15 +124,15 @@ public class Parser {
         return null;
     }
 
-    public static List<String> getArticle(String url) {
+    public static List<Element> getArticle(String url) {
 //        ArrayList<ParserModelArticle> cache = new ArrayList<>();
-        List<String> cache = new ArrayList<>();
+        List<Element> cache = new ArrayList<>();
 
         String body = OkHelper.getBody(url);
         if (body != null) {
             Document document = Jsoup.parse(body);
             Element element = document.getElementsByClass("article-entry").first();
-            Elements elements = element.select("p");
+            Elements elements = element.select("p, ul > li, h1, h2");
 //            for (Element obj : elements) {
 //                if (checkImg(backString(obj))) {
 //                    cache.add(new ParserModelArticle(tryUrl(backString(obj))));
@@ -143,23 +143,26 @@ public class Parser {
 //            }
 
             Stream.of(elements)
-                    .map(Element::toString)
                     .forEach(cache::add);
             return cache;
         }
         return null;
     }
 
+    public static String getBody(String url) {
+        return OkHelper.getBody(url);
+    }
 
     /*FOR TEST*/
     public static JSONObject getArticleJson(String url) {
         String body = OkHelper.getBody(url);
         JSONArray cache = new JSONArray();
+
         try {
             if (body != null) {
                 Document document = Jsoup.parse(body);
                 Element element = document.getElementsByClass("article-entry").first();
-                Elements elements = element.select("p");
+                Elements elements = element.select("p, ul > li");
                 for (Element obj : elements) {
                     JSONObject object = new JSONObject();
                     object.put("obj", obj.toString());
@@ -184,13 +187,13 @@ public class Parser {
         return false;
     }
 
-    private static String backString(Element element) {
+    public static String backString(Element element) {
         if (element != null) {
             return element.select("img[src]").attr("src");
         }
         return null;
     }
-    private static String tryUrl(String url) {
+    public static String tryUrl(String url) {
         return Constants.HOME_LINK + url;
     }
 

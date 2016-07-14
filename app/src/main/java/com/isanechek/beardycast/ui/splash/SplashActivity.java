@@ -12,9 +12,6 @@ import com.isanechek.beardycast.R;
 import com.isanechek.beardycast.ui.articlelist.ListArtActivity;
 import com.isanechek.beardycast.utils.Util;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-
 /**
  * Created by isanechek on 30.05.16.
  */
@@ -24,15 +21,14 @@ public class SplashActivity extends AppCompatActivity {
 
     private SplashPresenter presenter;
 
-    @BindView(R.id.splash_progress)
-    ProgressBar progress;
+    private ProgressBar progress;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(LAYOUT);
-        ButterKnife.bind(this);
         msg("HELLO");
+        progress = (ProgressBar) findViewById(R.id.splash_progress);
         presenter = new SplashPresenter(this);
     }
 

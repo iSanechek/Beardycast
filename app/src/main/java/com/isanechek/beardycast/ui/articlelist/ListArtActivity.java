@@ -1,9 +1,7 @@
 package com.isanechek.beardycast.ui.articlelist;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -23,13 +21,9 @@ import com.isanechek.beardycast.App;
 import com.isanechek.beardycast.R;
 import com.isanechek.beardycast.data.ModelT;
 import com.isanechek.beardycast.data.model.article.Article;
-import com.isanechek.beardycast.ui.podcast.PodcastActivity;
 
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.Unbinder;
 import io.realm.RealmList;
 import io.realm.RealmResults;
 
@@ -38,18 +32,12 @@ public class ListArtActivity extends AppCompatActivity {
     private static final int LAYOUT = R.layout.main_activity;
     private static final String RECYCLER_VIEW_STATE = "recycler_view_state";
 
-    @BindView(R.id.toolbar)
-    Toolbar toolbar;
-    @BindView(R.id.spinner)
-    Spinner spinner;
-    @BindView(R.id.refresh_layout)
-    SwipeRefreshLayout refreshLayout;
-    @BindView(R.id.article_list)
-    RecyclerView recyclerView;
-    @BindView(R.id.progressBar)
+    private Toolbar toolbar;
+    private Spinner spinner;
+    private SwipeRefreshLayout refreshLayout;
+    private RecyclerView recyclerView;
     ProgressBar progress;
 
-    private Unbinder unbinder;
     private ListTAdapter adapter;
 
     private ListArtPresenter presenter = new ListArtPresenter(this, ModelT.getInstance());
@@ -59,9 +47,9 @@ public class ListArtActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(LAYOUT);
         msg("HELLO");
-        unbinder = ButterKnife.bind(this);
         App.getRefWAtcher(this);
 
+        initView1();
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
@@ -69,8 +57,17 @@ public class ListArtActivity extends AppCompatActivity {
 
         initView();
 
+
         presenter.onCreate();
 
+    }
+
+    private void initView1() {
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        spinner = (Spinner) findViewById(R.id.spinner);
+        refreshLayout = (SwipeRefreshLayout) findViewById(R.id.refresh_layout);
+        recyclerView = (RecyclerView) findViewById(R.id.article_list);
+        progress = (ProgressBar) findViewById(R.id.progressBar);
     }
 
     @Override
@@ -90,7 +87,6 @@ public class ListArtActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         presenter.onDestroy();
-        unbinder.unbind();
     }
 
     @Override
@@ -113,7 +109,7 @@ public class ListArtActivity extends AppCompatActivity {
                 // implements action
                 break;
             case R.id.test:
-                startActivity(new Intent(this, PodcastActivity.class));
+
                 break;
             default:
                 break;
@@ -140,10 +136,7 @@ public class ListArtActivity extends AppCompatActivity {
     }
 
     private void initView() {
-        refreshLayout.setColorSchemeResources(ContextCompat.getColor(this, R.color.colorAccent),
-                ContextCompat.getColor(this, R.color.colorPrimaryDark),
-                ContextCompat.getColor(this, R.color.colorAccent),
-                ContextCompat.getColor(this, R.color.colorPrimaryDark));
+        refreshLayout.setColorSchemeResources(R.color.colorPrimaryDark, R.color.accent, R.color.colorPrimaryDark, R.color.accent);
         refreshLayout.setOnRefreshListener(() -> {
             refreshLayout.setRefreshing(true);
             recyclerView.smoothScrollToPosition(0);

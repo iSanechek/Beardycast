@@ -3,10 +3,9 @@ package com.isanechek.beardycast.data;
 import android.support.annotation.NonNull;
 import android.support.annotation.UiThread;
 
-import com.isanechek.beardycast.data.update.DataLoaderTest;
-import com.isanechek.beardycast.data.model.podcast.Podcast;
 import com.isanechek.beardycast.data.model.article.Article;
 import com.isanechek.beardycast.data.model.details.DetailsModel;
+import com.isanechek.beardycast.data.model.podcast.Podcast;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,14 +24,14 @@ public class Repository implements Cloneable {
 
     private static final long MINIMUM_NETWORK_WAIT_SEC = 120;
 
-    private DataLoaderTest loader;
+//    private DataLoaderTest loader;
     private Realm realm;
     private BehaviorSubject<Boolean> networkLoading = BehaviorSubject.create(false);
     private Map<String, Long> lastNetworkRequest = new HashMap<>();
 
     @UiThread
     public Repository() {
-        loader = new DataLoaderTest();
+//        loader = new DataLoaderTest();
         realm = Realm.getDefaultInstance();
     }
 
@@ -45,7 +44,7 @@ public class Repository implements Cloneable {
     public Observable<RealmResults<Article>> getAllArticles(@NonNull String url, boolean forceReload, boolean loadMore) {
         if (forceReload || timeSinceLastNetworkRequest(url) > MINIMUM_NETWORK_WAIT_SEC) {
 //            loader.loadData(url, realm, networkLoading, false, false, null, loadMore);
-            loader.loadData(url, false, realm, false, false, null, networkLoading);
+//            loader.loadData(url, false, realm, false, false, null, networkLoading);
             lastNetworkRequest.put(url, System.currentTimeMillis());
         }
 
@@ -64,7 +63,7 @@ public class Repository implements Cloneable {
     public Observable<DetailsModel> getArticleDetails(@NonNull String url, boolean forceReload) {
         if (forceReload || timeSinceLastNetworkRequest(url) > MINIMUM_NETWORK_WAIT_SEC) {
 //            loader.loadData(url, realm, networkLoading, true, false, null, false);
-            loader.loadData(url, false, realm, true, false, null, networkLoading);
+//            loader.loadData(url, false, realm, true, false, null, networkLoading);
             lastNetworkRequest.put(url, System.currentTimeMillis());
         }
         return realm.where(DetailsModel.class).equalTo("artLink", url).findFirstAsync().asObservable();
@@ -87,7 +86,7 @@ public class Repository implements Cloneable {
     public Observable<Podcast> getPodcast(@NonNull String url, boolean forceReload, String podName) {
         if (forceReload || timeSinceLastNetworkRequest(url) > MINIMUM_NETWORK_WAIT_SEC) {
 //            loader.loadData(url, realm, networkLoading, false, true, podName, false);
-            loader.loadData(url, false, realm, true, true, podName, networkLoading);
+//            loader.loadData(url, false, realm, true, true, podName, networkLoading);
             lastNetworkRequest.put(url, System.currentTimeMillis());
         }
 

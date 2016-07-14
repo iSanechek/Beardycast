@@ -23,8 +23,11 @@ public class ListArtPresenter implements Presenter {
     private final ListArtActivity activity;
     private final ModelT model;
 
+    private Subscription isNetworkUsed;
+    private Subscription loadData;
+    private Subscription loadMoreData;
+
     private Map<String, String> sections;
-    private List<Subscription> subscriptions;
 
     public ListArtPresenter(ListArtActivity activity, ModelT model) {
         this.activity = activity;
@@ -33,7 +36,6 @@ public class ListArtPresenter implements Presenter {
 
     @Override
     public void onCreate() {
-        subscriptions = new ArrayList<>();
         sections = model.getSections();
         ArrayList<String> sectionList = new ArrayList<>(sections.values());
         Collections.sort(sectionList, (lhs, rhs) -> {
@@ -51,15 +53,17 @@ public class ListArtPresenter implements Presenter {
 
     @Override
     public void onResume() {
-        subscriptions.add(model.isNetworkUsed()
-                .subscribe(activity::showNetworkLoading));
+        isNetworkUsed = model.isNetworkUsed()
+                .subscribe(activity::showNetworkLoading);
 
         sectionSelected(model.getCurrentSectionKey());
     }
 
     @Override
     public void onPause() {
-        unSubscribeAll();
+        isNetworkUsed.unsubscribe();
+        loadData.unsubscribe();
+        loadMoreData.unsubscribe();
     }
 
     @Override
@@ -81,22 +85,17 @@ public class ListArtPresenter implements Presenter {
     }
 
     public void loadMore() {
-        subscriptions.add(model.loadMoreArticleLIst()
-                .subscribe(activity::loadMore, activity::showErrorMessage));
+        loadMoreData = model.loadMoreArticleLIst()
+                .subscribe(activity::loadMore, activity::showErrorMessage);
     }
 
     private void sectionSelected(@NonNull String url) {
         model.selectSection(url);
 
-        subscriptions.add(model.getSelectedArticleFeed()
-                .subscribe(activity::showList, activity::showErrorMessage));
+        loadData = model.getSelectedArticleFeed()
+                .subscribe(activity::showList, activity::showErrorMessage);
     }
 
-    private void unSubscribeAll() {
-        Stream.of(subscriptions)
-                .filter(subscription -> !subscription.isUnsubscribed())
-                .forEach(Subscription::unsubscribe);
-    }
     private void msg(String log) {
         LogUtil.logD("List Article Presenter", log);
     }

@@ -12,9 +12,6 @@ import com.bumptech.glide.Glide;
 import com.isanechek.beardycast.R;
 import com.isanechek.beardycast.ui.widget.PullBackLayout;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-
 /**
  * Created by isanechek on 26.05.16.
  */
@@ -32,19 +29,18 @@ public class ImageViewer extends AppCompatActivity implements PullBackLayout.Cal
 
     private String url;
 
-    @BindView(R.id.pull_back)
-    PullBackLayout backLayout;
-    @BindView(R.id.viewer_pic)
-    ImageView pic;
+    private PullBackLayout backLayout;
+    private ImageView pic;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(LAYOUT);
-        ButterKnife.bind(this);
         msg("HELLO");
 
+        backLayout = (PullBackLayout) findViewById(R.id.pull_back);
         backLayout.setCallback(this);
+        pic = (ImageView) findViewById(R.id.viewer_pic);
 
         url = getIntent().getExtras().getString("url");
         if (url == null) {

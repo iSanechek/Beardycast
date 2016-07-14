@@ -24,17 +24,15 @@ import com.bumptech.glide.Glide;
 import com.isanechek.beardycast.Constants;
 import com.isanechek.beardycast.R;
 import com.isanechek.beardycast.data.Model;
-import com.isanechek.beardycast.data.parser.Parser;
-import com.isanechek.beardycast.data.parser.model.details.ParserModelArticle;
 import com.isanechek.beardycast.data.model.article.ArtCategory;
 import com.isanechek.beardycast.data.model.article.Article;
+import com.isanechek.beardycast.data.parser.Parser;
+import com.isanechek.beardycast.data.parser.model.details.ParserModelArticle;
 import com.isanechek.beardycast.ui.imageviewer.ImageViewer;
 import com.isanechek.beardycast.utils.LogUtil;
 
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import io.realm.RealmList;
 import me.kaede.tagview.Tag;
 import me.kaede.tagview.TagView;
@@ -57,30 +55,24 @@ public class DetailsActivity extends AppCompatActivity {
     private DetailsPresenter presenter;
     private DisplayMetrics metrics;
 
-    @BindView(R.id.toolbar)
-    Toolbar toolbar;
-    @BindView(R.id.details_progress)
-    MaterialProgressBar progress;
+    private Toolbar toolbar;
+    private MaterialProgressBar progress;
 //    @BindView(R.id.title_details)
 //    TextView title_tv;
-    @BindView(R.id.date_details)
-    TextView date_tv;
+    private TextView date_tv;
 //    @BindView(R.id.error_details_view)
 //    CardView error_view;
 
-    @BindView(R.id.fab)
-    FloatingActionButton fab;
-
-    @BindView(R.id.details_category)
-    TagView tagView;
+    private FloatingActionButton fab;
+    private TagView tagView;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(LAYOUT);
-        ButterKnife.bind(this);
         msg("HELLO FROM DETAILS ACTIVITY");
 
+        initView();
         setSupportActionBar(toolbar);
         getSupportActionBar().setDefaultDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -88,7 +80,7 @@ public class DetailsActivity extends AppCompatActivity {
         metrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(metrics);
 
-        CoordinatorLayout layout = ButterKnife.findById(this, R.id.coordinatorLayout);
+        CoordinatorLayout layout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
         String id = getIntent().getExtras().getString(Constants.MODEL_ID);
         if (id == null) {
             Snackbar.make(layout, "Oopppsssss", Snackbar.LENGTH_LONG)
@@ -98,6 +90,14 @@ public class DetailsActivity extends AppCompatActivity {
             presenter = new DetailsPresenter(this, Model.getInstance(), id);
             presenter.onCreate();
         }
+    }
+
+    private void initView() {
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        tagView = (TagView) findViewById(R.id.details_category);
+        fab = (FloatingActionButton) findViewById(R.id.fab);
+        date_tv = (TextView) findViewById(R.id.date_details);
+        progress = (MaterialProgressBar) findViewById(R.id.details_progress);
     }
 
     @Override
@@ -143,7 +143,7 @@ public class DetailsActivity extends AppCompatActivity {
     }
 
     public void loadView(Article article) {
-        ImageView imageView = ButterKnife.findById(this, R.id.back_drop);
+        ImageView imageView = (ImageView) findViewById(R.id.back_drop);
         Glide.with(this).load(article.getArtImgLink()).placeholder(R.drawable.h1).into(imageView);
 
         showCategory(article.getCategory());
@@ -201,7 +201,7 @@ public class DetailsActivity extends AppCompatActivity {
 
     public void createUI(List<ParserModelArticle> list) {
         int height = dpToPix(150, metrics);
-        LinearLayout linearLayout = ButterKnife.findById(this, R.id.content_container);
+        LinearLayout linearLayout = (LinearLayout) findViewById(R.id.content_container);
         for (int i = 0; i < list.size(); i++) {
             ParserModelArticle d = list.get(i);
             LinearLayout layout = new LinearLayout(this);

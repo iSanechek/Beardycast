@@ -1,11 +1,10 @@
 apply plugin: 'com.android.application'
 apply plugin: 'realm-android'
 apply plugin: 'me.tatarka.retrolambda'
-//apply plugin: 'android-apt'
 
 android {
     compileSdkVersion 24
-    buildToolsVersion '24'
+    buildToolsVersion '24.0.0'
 
     def versionPropsFile = file('version.properties')
     if (versionPropsFile.canRead()) {
@@ -35,7 +34,7 @@ android {
         defaultConfig {
             applicationId "com.isanechek.beardycast"
             versionCode versionNumber
-            versionName "${versionMajor}.${versionMinor}.${versionPatch} (${versionBuild}) Release"
+            versionName "${versionMajor}.${versionMinor}.${versionPatch} (${versionBuild})"
             minSdkVersion 19
             targetSdkVersion 24
             vectorDrawables.useSupportLibrary = true
@@ -70,6 +69,9 @@ android {
         exclude 'LICENSE.txt'
         exclude 'META-INF/services/javax.annotation.processing.Processor' // butterknife
     }
+    defaultConfig {
+        vectorDrawables.useSupportLibrary = true
+    }
 }
 
 ext {
@@ -78,7 +80,6 @@ ext {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    testCompile 'junit:junit:4.12'
 
     /*Support libs*/
     compile "com.android.support:appcompat-v7:${supportLibVersion}"
@@ -88,26 +89,26 @@ dependencies {
     compile "com.android.support:design:${supportLibVersion}"
 
     /*RxJava*/
-    compile 'io.reactivex:rxandroid:1.2.1'
-    compile 'io.reactivex:rxjava:1.1.6'
+
 
     compile group: 'io.reactivex', name: 'rxjava-async-util', version: '0.21.0'
 
     /*Network*/
 
-    compile 'org.jsoup:jsoup:1.9.1'
-    compile 'com.squareup.okhttp3:okhttp:3.2.0'
 
-    
+
     compile project(':tag')
-    
+
     compile('com.mikepenz:materialdrawer:5.3.0@aar') {
         transitive = true
     }
-    
-    debugCompile 'com.squareup.leakcanary:leakcanary-android:1.4-beta2'
-    compile 'me.zhanghai.android.materialprogressbar:library:1.1.6'
 
+    /*Jake Wharton*/
+    compile 'io.reactivex:rxandroid:1.2.1'
+    compile 'io.reactivex:rxjava:1.1.6'
+    compile 'org.jsoup:jsoup:1.9.1'
+    compile 'com.squareup.okhttp3:okhttp:3.2.0'
+    compile 'me.zhanghai.android.materialprogressbar:library:1.1.6'
     compile 'com.github.bumptech.glide:glide:3.7.0'
     compile 'io.realm:android-adapters:1.0.1'
     compile 'com.github.thorbenprimke:realm-recyclerview:0.9.20'
@@ -115,9 +116,7 @@ dependencies {
     compile 'com.github.johnkil.android-robototextview:robototextview:2.5.0'
     compile 'com.mikepenz:google-material-typeface:2.2.0.1.original@aar'
     compile 'com.mikepenz:fontawesome-typeface:4.6.0.1@aar'
-
-    /*Jake Wharton*/
     compile 'com.jakewharton.timber:timber:4.1.2'
-    compile 'com.jakewharton:butterknife:8.0.1'
-//    apt 'com.jakewharton:butterknife-compiler:8.0.1'
+    debugCompile 'com.squareup.leakcanary:leakcanary-android:1.4-beta2'
+    compile 'co.trikita:anvil-sdk19:0.4.0'
 }

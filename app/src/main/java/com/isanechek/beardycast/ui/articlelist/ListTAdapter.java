@@ -19,8 +19,6 @@ import com.isanechek.beardycast.data.model.article.Article;
 import com.isanechek.beardycast.ui.details.DetailsActivity;
 import com.isanechek.beardycast.utils.Util;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import io.realm.RealmList;
 import me.kaede.tagview.Tag;
 import me.kaede.tagview.TagView;
@@ -146,32 +144,30 @@ public class ListTAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     public class ItemViewHolder extends RecyclerView.ViewHolder {
 
-        @BindView(R.id.list_description)
         RobotoTextView description;
-        @BindView(R.id.list_art_title)
         RobotoTextView title;
-        @BindView(R.id.list_art_date)
         TextView date;
-        @BindView(R.id.cardView)
         CardView cardView;
-        @BindView(R.id.list_art_img)
         ImageView pic;
-        @BindView(R.id.list_art_tags)
         TagView tagView;
 
-        ItemViewHolder(View itemView) {
-            super(itemView);
-            ButterKnife.bind(this, itemView);
+        ItemViewHolder(View v) {
+            super(v);
+            description = (RobotoTextView) v.findViewById(R.id.list_description);
+            title = (RobotoTextView) v.findViewById(R.id.list_art_title);
+            date = (TextView) v.findViewById(R.id.list_art_date);
+            cardView = (CardView) v.findViewById(R.id.cardView);
+            pic = (ImageView) v.findViewById(R.id.list_art_img);
+            tagView = (TagView) v.findViewById(R.id.list_art_tags);
         }
     }
 
     public class LoadingViewHolder extends RecyclerView.ViewHolder {
-        @BindView(R.id.loading)
         ProgressBar mLoading;
 
         LoadingViewHolder(View itemView) {
             super(itemView);
-            ButterKnife.bind(this, itemView);
+            mLoading = (ProgressBar) itemView.findViewById(R.id.loading);
         }
     }
 

@@ -7,6 +7,7 @@ import com.isanechek.beardycast.data.parser.model.list.ParserListModel;
 import com.isanechek.beardycast.data.rss.RssItemParser;
 
 import org.json.JSONObject;
+import org.jsoup.nodes.Element;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +31,7 @@ public class ApiImpl implements Api {
     }
 
     @Override
-    public Observable<List<String>> getArticleDetails(final String url) {
+    public Observable<List<Element>> getArticleDetails(final String url) {
         return Observable.defer(() -> Observable.just(Parser.getArticle(url)));
     }
 
@@ -49,4 +50,5 @@ public class ApiImpl implements Api {
     public Observable<JSONObject> getArticleObject(final String url) {
         return Observable.defer(() -> Observable.just(Parser.getArticleJson(url)));
     }
+
 }
