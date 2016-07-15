@@ -2,7 +2,6 @@ package com.isanechek.beardycast.ui.splash;
 
 import android.util.Log;
 
-import com.isanechek.beardycast.data.Model;
 import com.isanechek.beardycast.pref.Preferences;
 import com.isanechek.beardycast.ui.Presenter;
 
@@ -25,11 +24,8 @@ public class SplashPresenter implements Presenter {
     private Subscription loaderSubscription;
     private Subscription dataSubscription;
 
-    private final Model model;
-
     public SplashPresenter(SplashActivity view) {
         this.view = view;
-        model = Model.getInstance();
     }
 
     @Override
@@ -41,8 +37,8 @@ public class SplashPresenter implements Presenter {
     public void onResume() {
         if (Preferences.MainPreferences.isFirstStart()) {
             msg("First Start");
-            loaderSubscription = model.isNetworkUsed()
-                    .subscribe(view::showProgress);
+//            loaderSubscription = model.isNetworkUsed()
+//                    .subscribe(view::showProgress);
 
             // implements load data
             loadDate();
@@ -50,7 +46,7 @@ public class SplashPresenter implements Presenter {
     }
 
     private void loadDate() {
-        model.firstStart();
+//        model.firstStart();
     }
 
     @Override

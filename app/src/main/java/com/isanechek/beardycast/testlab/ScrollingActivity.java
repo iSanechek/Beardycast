@@ -174,13 +174,39 @@ public class ScrollingActivity extends AppCompatActivity {
                     }
                     break;
                 case "ul":
-                    Elements elements = e.getAllElements();
+                    Elements e1 = e.getElementsByAttribute("li");
+                    Log.e(TAG, "getElementsByAttribute: " + e1.size());
+                    Elements e2 = e.getElementsByAttributeStarting("li");
+                    Log.e(TAG, "getElementsByAttributeStarting: " + e2.size());
+//                    Elements e3 = e.getAllElements();
+//                    Log.e(TAG, "getAllElements: " + e3.size()); // not working
+                    Elements ei = e.getElementsByTag("ul");
+                    Stream.of(ei).map(Element::toString).forEach(this::msg);
+                    Log.e(TAG, "getElementsByTag: " + ei.size());
+                    Elements e5 = e.siblingElements();
+                    Log.e(TAG, "siblingElements: " + e5.size());
+                    Elements e6 = e.children();
+                    Log.e(TAG, "children: " + e6.size());
+                    Stream.of(e6).map(Element::toString).forEach(this::msg);
+
+
+
+                    Elements ee = e.children();
+                    Log.e(TAG, "getElementsByTag: " + ee.size());
+
+//                    Stream.of(ee).map(Element::toString).forEach(this::msg);
+
+
+
+
+
                     LinearLayout linearLayout = new LinearLayout(ScrollingActivity.this);
                     linearLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
                             LinearLayout.LayoutParams.WRAP_CONTENT));
                     linearLayout.setOrientation(LinearLayout.VERTICAL);
                     linearLayout.setBackgroundColor(getResources().getColor(R.color.divider));
-                    for (Element element : elements) {
+                    for (Element element : ee) {
+
                         TextView textView = new TextView(ScrollingActivity.this);
                         textView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
                                 ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -265,7 +291,7 @@ public class ScrollingActivity extends AppCompatActivity {
         cardView.addView(imageView);
         cardView.setOnClickListener(v -> ImageViewer.startActivity(ScrollingActivity.this, Parser.backString(element)));
         String u = Parser.tryUrl(Parser.backString(element));
-        Glide.with(this).load(u).centerCrop().placeholder(R.drawable.holder1).crossFade().into(imageView);
+//        Glide.with(this).load(u).centerCrop().placeholder(R.drawable.holder1).crossFade().into(imageView);
         container.addView(cardView);
     }
 
