@@ -7,6 +7,8 @@ import android.util.Log;
 import com.isanechek.beardycast.App;
 import com.isanechek.beardycast.Constants;
 
+import org.jsoup.nodes.Element;
+
 /**
  * Created by isanechek on 03.05.16.
  */
@@ -27,5 +29,12 @@ public class UrlUtil {
 
     public static String tryUrl(String url) {
         return Constants.HOME_LINK + url;
+    }
+
+    public static String getImageUrlFromElement(Element element) {
+        if (element != null) {
+            return element.select("img[src]").attr("src");
+        }
+        return null;
     }
 }

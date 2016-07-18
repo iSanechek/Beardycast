@@ -2,13 +2,10 @@ package com.isanechek.beardycast.ui.details;
 
 import android.support.annotation.NonNull;
 
-import com.annimon.stream.Stream;
 import com.isanechek.beardycast.data.ModelT;
 import com.isanechek.beardycast.data.api.ApiImpl;
 import com.isanechek.beardycast.ui.Presenter;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.isanechek.beardycast.utils.RxUtil;
 
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
@@ -29,7 +26,6 @@ public class DetailsPresenter implements Presenter {
     private Subscription loadData;
     private Subscription loadDetailsData;
     private ApiImpl api;
-
 
     public DetailsPresenter(DetailsActivity view, ModelT model, String id) {
         this.view = view;
@@ -77,9 +73,12 @@ public class DetailsPresenter implements Presenter {
     }
 
     private void loadDetails(String url) {
+        RxUtil.unsubscribe(loadDetailsData);
+
         loadDetailsData = api.getArticleDetails(url)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(view::createView, view::showErrorView);
+
     }
 }

@@ -1,6 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'realm-android'
 apply plugin: 'me.tatarka.retrolambda'
+apply plugin: 'kotlin-android'
 
 android {
     compileSdkVersion 24
@@ -35,7 +36,7 @@ android {
             applicationId "com.isanechek.beardycast"
             versionCode versionNumber
             versionName "${versionMajor}.${versionMinor}.${versionPatch} (${versionBuild})"
-            minSdkVersion 19
+            minSdkVersion 21
             targetSdkVersion 24
             vectorDrawables.useSupportLibrary = true
         }
@@ -64,6 +65,11 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+    }
+
     packagingOptions {
         exclude 'LICENSE'
         exclude 'LICENSE.txt'
@@ -76,6 +82,7 @@ android {
 
 ext {
     supportLibVersion = '24.0.0'
+    anko_version = '0.9'
 }
 
 dependencies {
@@ -120,4 +127,15 @@ dependencies {
     compile 'com.jakewharton.timber:timber:4.1.2'
     debugCompile 'com.squareup.leakcanary:leakcanary-android:1.4-beta2'
     compile 'co.trikita:anvil-sdk19:0.4.0'
+    compile "com.andkulikov:transitionseverywhere:1.6.5"
+
+
+    compile "org.jetbrains.anko:anko-sdk19:${anko_version}"
+    compile "org.jetbrains.anko:anko-appcompat-v7:${anko_version}"
+    compile "org.jetbrains.anko:anko-design:${anko_version}"
+    compile "org.jetbrains.anko:anko-recyclerview-v7:${anko_version}"
+    compile "org.jetbrains.anko:anko-support-v4:${anko_version}"
+    compile "org.jetbrains.anko:anko-cardview-v7:${anko_version}"
+
+    testCompile 'junit:junit:4.12'
 }

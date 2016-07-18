@@ -2,11 +2,9 @@ package com.isanechek.beardycast.data.api;
 
 import com.isanechek.beardycast.Constants;
 import com.isanechek.beardycast.data.parser.Parser;
-import com.isanechek.beardycast.data.parser.model.details.ParserModelArticle;
 import com.isanechek.beardycast.data.parser.model.list.ParserListModel;
 import com.isanechek.beardycast.data.rss.RssItemParser;
 
-import org.json.JSONObject;
 import org.jsoup.nodes.Element;
 
 import java.util.ArrayList;
@@ -45,10 +43,4 @@ public class ApiImpl implements Api {
     public Observable<ArrayList<RssItemParser>> getListPodcast(final String url) {
         return Observable.defer(() -> Observable.just(RssItemParser.getRssItems(url)));
     }
-
-    @Override
-    public Observable<JSONObject> getArticleObject(final String url) {
-        return Observable.defer(() -> Observable.just(Parser.getArticleJson(url)));
-    }
-
 }

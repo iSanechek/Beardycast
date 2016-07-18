@@ -1,5 +1,6 @@
 package com.isanechek.beardycast.ui.articlelist;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -21,6 +22,7 @@ import com.isanechek.beardycast.App;
 import com.isanechek.beardycast.R;
 import com.isanechek.beardycast.data.ModelT;
 import com.isanechek.beardycast.data.model.article.Article;
+import com.isanechek.beardycast.pref.PreferencesActivity;
 
 import java.util.List;
 
@@ -106,7 +108,7 @@ public class ListArtActivity extends AppCompatActivity {
 
         switch (item.getItemId()) {
             case R.id.list_setting:
-                // implements action
+                showSettingActivity();
                 break;
             case R.id.test:
 
@@ -187,6 +189,11 @@ public class ListArtActivity extends AppCompatActivity {
         list.clear();
         Stream.of(articles).forEach(list::add);
         return list;
+    }
+
+    private void showSettingActivity() {
+        Intent intent = new Intent(this, PreferencesActivity.class);
+        startActivity(intent);
     }
 
     private void msg(String text) {

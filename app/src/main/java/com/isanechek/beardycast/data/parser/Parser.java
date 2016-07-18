@@ -5,14 +5,10 @@ import android.util.Log;
 import com.annimon.stream.Stream;
 import com.isanechek.beardycast.Constants;
 import com.isanechek.beardycast.data.network.OkHelper;
-import com.isanechek.beardycast.data.parser.model.details.ParserModelArticle;
 import com.isanechek.beardycast.data.parser.model.list.ParserListCategoryModel;
 import com.isanechek.beardycast.data.parser.model.list.ParserListModel;
 import com.isanechek.beardycast.data.parser.model.list.ParserListTagModel;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -24,9 +20,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -125,56 +119,17 @@ public class Parser {
     }
 
     public static List<Element> getArticle(String url) {
-//        ArrayList<ParserModelArticle> cache = new ArrayList<>();
         List<Element> cache = new ArrayList<>();
 
         String body = OkHelper.getBody(url);
         if (body != null) {
             Document document = Jsoup.parse(body);
             Element element = document.getElementsByClass("article-entry").first();
-            Elements elements = element.select("p, ul > li, h1, h2");
-//            for (Element obj : elements) {
-//                if (checkImg(backString(obj))) {
-//                    cache.add(new ParserModelArticle(tryUrl(backString(obj))));
-//                }
-//                else {
-//                    cache.add(new ParserModelArticle(obj.text()));
-//                }
-//            }
+            Elements elements = element.select("p, ul, blockquote, h1, h2");
 
             Stream.of(elements)
                     .forEach(cache::add);
             return cache;
-        }
-        return null;
-    }
-
-    public static String getBody(String url) {
-        return OkHelper.getBody(url);
-    }
-
-    /*FOR TEST*/
-    public static JSONObject getArticleJson(String url) {
-        String body = OkHelper.getBody(url);
-        JSONArray cache = new JSONArray();
-
-        try {
-            if (body != null) {
-                Document document = Jsoup.parse(body);
-                Element element = document.getElementsByClass("article-entry").first();
-                Elements elements = element.select("p, ul > li");
-                for (Element obj : elements) {
-                    JSONObject object = new JSONObject();
-                    object.put("obj", obj.toString());
-                    cache.put(object);
-                    msg("Object -->> " + obj.toString());
-                }
-                JSONObject jsonObject = new JSONObject();
-                jsonObject.put(url, jsonObject);
-                return jsonObject;
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
         }
         return null;
     }

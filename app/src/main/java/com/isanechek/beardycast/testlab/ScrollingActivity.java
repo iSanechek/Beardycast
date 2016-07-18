@@ -10,10 +10,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
-import android.text.Spannable;
 import android.text.Spanned;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -23,18 +23,15 @@ import android.widget.TextView;
 
 import com.annimon.stream.Stream;
 import com.annimon.stream.function.Consumer;
-import com.annimon.stream.function.Function;
 import com.annimon.stream.function.Predicate;
-import com.bumptech.glide.Glide;
 import com.isanechek.beardycast.R;
-import com.isanechek.beardycast.data.network.OkHelper;
 import com.isanechek.beardycast.data.parser.Parser;
-import com.isanechek.beardycast.ui.details.DetailsActivity;
 import com.isanechek.beardycast.ui.imageviewer.ImageViewer;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.nodes.Node;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
@@ -45,18 +42,19 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static com.isanechek.beardycast.utils.Util.dpToPix;
-import static com.isanechek.beardycast.utils.Util.isAndroid5Plus;
 
 public class ScrollingActivity extends AppCompatActivity {
 
     private static final String TAG = "TEST ACTIVITY";
-    private static final String IMG = "([^\\s]+(\\.(?i)(jpg|png|bmp|gif))$)";
+    private static final String IMG = "([^\\s]+(\\.(?i)(jpg|png|gif))$)";
+    private static final String MP3 = "([^\\s]+(\\.(?i)(mp3))$)";
     private static final String UL_TAG = "<ul>";
     private static final String PATTER_ONE = "<div class=\"article-entry\"[^>]*?>[\\s\\S]*?<!-- toc -->([\\s\\S]*?)<!-- tocstop -->[\\s\\S]*?(<h1[\\s\\S]*?)<hr";
 
     private DisplayMetrics metrics;
     private LinearLayout container;
     private LinearLayout layout;
+    ArrayList<View> views = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,6 +95,7 @@ public class ScrollingActivity extends AppCompatActivity {
 
     private List<Element> getList() {
         List<Element> cache = new ArrayList<>();
+        List<String> cache1 = new ArrayList<>();
 
         String linkOne = "http://beardycast.com/2016/07/11/Andrey_B/apple-maps-review/";
         String linkTwo = "http://beardycast.com/2016/07/10/Anton_P/beardygram-1/";
@@ -106,7 +105,7 @@ public class ScrollingActivity extends AppCompatActivity {
 
             Document document = Jsoup.parse(body);
             Element element = document.getElementsByClass("article-entry").first();
-            Elements elements = element.select("p, ul, blockquote, h1, h2");
+            Elements elements = element.select("p, ul, blockquote, h1, h2, h4");
             Stream.of(elements)
                     .forEach(cache::add);
             /*For test*/
@@ -124,9 +123,10 @@ public class ScrollingActivity extends AppCompatActivity {
 ////                Log.e(TAG, "Ничего не нашлось");
 ////            }
 //
-//            while(matcher.find()) {
-//                Log.d(TAG, "getList: " + matcher.group());
-//            }
+////            while(matcher.find()) {
+////                Log.d(TAG, "getList: " + matcher.group());
+////            }
+////
 
             return cache;
         }
@@ -156,74 +156,79 @@ public class ScrollingActivity extends AppCompatActivity {
                 Log.e(TAG, "onPostExecute: NULL");
             } else {
                 Log.d(TAG, "onPostExecute: " + elements.size());
-//                createUI(elements);
                 testParsing(elements);
             }
         }
     }
 
     private void testParsing(List<Element> list) {
+        boolean blockquoteStatus = false;
+
         for (Element e : list) {
             String elementName = e.tagName();
             switch (elementName) {
                 case "p":
                     if (isCheck(Parser.backString(e), IMG)) {
-                        createImage(e);
+                        View v = createImage(e);
+                        createTestImage(e);
+                        buildUiHelper(v, true);
                     } else {
-                        createTextView(e);
+                        if (blockquoteStatus) {
+                            TextView t = createTextView(e, true);
+                            buildUiHelper(t, true);
+                            blockquoteStatus = false;
+                        } else {
+                            TextView textView = createTextView(e, false);
+                            buildUiHelper(textView, true);
+                        }
                     }
                     break;
                 case "ul":
-                    Elements e1 = e.getElementsByAttribute("li");
-                    Log.e(TAG, "getElementsByAttribute: " + e1.size());
-                    Elements e2 = e.getElementsByAttributeStarting("li");
-                    Log.e(TAG, "getElementsByAttributeStarting: " + e2.size());
-//                    Elements e3 = e.getAllElements();
-//                    Log.e(TAG, "getAllElements: " + e3.size()); // not working
-                    Elements ei = e.getElementsByTag("ul");
-                    Stream.of(ei).map(Element::toString).forEach(this::msg);
-                    Log.e(TAG, "getElementsByTag: " + ei.size());
-                    Elements e5 = e.siblingElements();
-                    Log.e(TAG, "siblingElements: " + e5.size());
-                    Elements e6 = e.children();
-                    Log.e(TAG, "children: " + e6.size());
-                    Stream.of(e6).map(Element::toString).forEach(this::msg);
-
-
-
                     Elements ee = e.children();
-                    Log.e(TAG, "getElementsByTag: " + ee.size());
-
-//                    Stream.of(ee).map(Element::toString).forEach(this::msg);
-
-
-
-
 
                     LinearLayout linearLayout = new LinearLayout(ScrollingActivity.this);
                     linearLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
                             LinearLayout.LayoutParams.WRAP_CONTENT));
                     linearLayout.setOrientation(LinearLayout.VERTICAL);
-                    linearLayout.setBackgroundColor(getResources().getColor(R.color.divider));
                     for (Element element : ee) {
 
-                        TextView textView = new TextView(ScrollingActivity.this);
-                        textView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-                                ViewGroup.LayoutParams.WRAP_CONTENT));
-                        textView.setPadding(8,8,8,8);
-                        textView.setText(getText(element));
-                        linearLayout.addView(textView);
+                        Elements elements = element.select("a, li");
+
+                        for (Element element1 : elements) {
+                            String element1Name = element1.tagName();
+                            if (element1Name.equals("a")) {
+                                TextView textView = new TextView(ScrollingActivity.this);
+                                textView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                                        ViewGroup.LayoutParams.WRAP_CONTENT));
+                                textView.setPadding(8,8,8,8);
+                                textView.setText(getText(element1));
+                                linearLayout.addView(textView);
+                            }
+                        }
                     }
-                    container.addView(linearLayout);
+                    buildUiHelper(linearLayout, false);
                     break;
                 case "blockquote":
-
+                    blockquoteStatus = true;
                     break;
                 case "h1":
-                    Log.d(TAG, "testParsing: H1");
+                    TextView textView2 = new TextView(ScrollingActivity.this);
+                    textView2.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                            ViewGroup.LayoutParams.WRAP_CONTENT));
+                    textView2.setText(getText(e));
+                    textView2.setGravity(Gravity.CENTER_HORIZONTAL);
+                    buildUiHelper(textView2, false);
                     break;
                 case "h2":
-                    Log.d(TAG, "testParsing: H2");
+                    TextView textView3 = new TextView(ScrollingActivity.this);
+                    textView3.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                            ViewGroup.LayoutParams.WRAP_CONTENT));
+                    textView3.setGravity(Gravity.CENTER_HORIZONTAL);
+                    textView3.setText(getText(e));
+                    buildUiHelper(textView3, false);
+                    break;
+                case "h4":
+
                     break;
                 default:
                     break;
@@ -235,51 +240,35 @@ public class ScrollingActivity extends AppCompatActivity {
         return Html.fromHtml(element.toString());
     }
 
-//    private void createUI(List<Element> list) {
-//        int height = dpToPix(150, metrics);
-//        container = (LinearLayout) findViewById(R.id.content_container);
-//        for (int i = 0; i < list.size(); i++) {
-//            Element e = list.get(i);
-//            layout = new LinearLayout(this);
-//            layout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-//            layout.setOrientation(LinearLayout.VERTICAL);
-//
-//            if (isCheck(Parser.backString(e), IMG)) {
-//                CardView cardView = new CardView(this);
-//                cardView.setLayoutParams(new LinearLayout.LayoutParams(CardView.LayoutParams.MATCH_PARENT, height));
-//
-//                ImageView imageView = new ImageView(this);
-//                imageView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
-//                        LinearLayout.LayoutParams.WRAP_CONTENT));
-//                imageView.setScaleType(ImageView.ScaleType.FIT_XY);
-//                cardView.addView(imageView);
-//                cardView.setOnClickListener(v -> ImageViewer.startActivity(ScrollingActivity.this, Parser.backString(e)));
-//                layout.addView(cardView);
-//                String u = Parser.tryUrl(Parser.backString(e));
-//                Glide.with(this).load(u).centerCrop().placeholder(R.drawable.holder1).crossFade().into(imageView);
-//            }
-//            else {
-//
-//                if (isCheck(e.toString(), UL_TAG)) {
-//                    Log.d(TAG, "UL Здесь " + e.toString());
-//                }else {
-//                    TextView textView = new TextView(this);
-//                    textView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-//                            ViewGroup.LayoutParams.WRAP_CONTENT));
-//                    textView.setTextSize(16f);
-//                    textView.setTextColor(Color.parseColor("#212121"));
-//                    textView.setText(Html.fromHtml(e.toString()));
-//                    layout.addView(textView);
-//                }
-//            }
-//
-//            container.addView(layout);
-//        }
-//    }
 
+    private void buildUiHelper(View view, boolean card) {
 
+        if (!card) {
+            if (views.size() != 0) {
+                buildUi(views);
+                views.clear();
+            }
+            container.addView(view);
+        } else {
+            views.add(view);
+        }
+    }
+    private void buildUi(ArrayList<View> views) {
+        CardView cardView = new CardView(ScrollingActivity.this);
+        cardView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT));
+        cardView.setPadding(16,0,16,0);
+        LinearLayout layout = new LinearLayout(ScrollingActivity.this);
+        layout.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT));
+        layout.setOrientation(LinearLayout.VERTICAL);
+        layout.setBackgroundColor(getResources().getColor(R.color.accent));
+        Stream.of(views).forEach(layout::addView);
+        cardView.addView(layout);
+        container.addView(cardView);
+    }
 
-    private void createImage(@NonNull Element element) {
+    private View createImage(@NonNull Element element) {
         int height = dpToPix(150, metrics);
         CardView cardView = new CardView(ScrollingActivity.this);
         cardView.setLayoutParams(new LinearLayout.LayoutParams(CardView.LayoutParams.MATCH_PARENT, height));
@@ -292,25 +281,31 @@ public class ScrollingActivity extends AppCompatActivity {
         cardView.setOnClickListener(v -> ImageViewer.startActivity(ScrollingActivity.this, Parser.backString(element)));
         String u = Parser.tryUrl(Parser.backString(element));
 //        Glide.with(this).load(u).centerCrop().placeholder(R.drawable.holder1).crossFade().into(imageView);
-        container.addView(cardView);
+        return cardView;
     }
 
-    private void createTextView(@NonNull Element element) {
+    private void createTestImage(Element element) {
+        int height = dpToPix(150, metrics);
+
+        Elements obj = element.getAllElements();
+
+
+    }
+
+    private TextView createTextView(@NonNull Element element, boolean b) {
         TextView textView = new TextView(ScrollingActivity.this);
         textView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT));
         textView.setTextSize(16f);
-        textView.setTextColor(Color.parseColor("#212121"));
+        textView.setPadding(8,8,8,8);
+        textView.setTextColor(b ? Color.GREEN : Color.parseColor("#212121"));
         textView.setText(Html.fromHtml(element.toString()));
-        container.addView(textView);
+        return textView;
     }
 
     private boolean isCheck(String input, String pattern) {
         Pattern p = Pattern.compile(pattern);
         Matcher matcher = p.matcher(input);
-        if (matcher.matches()) {
-            return true;
-        }
-        return false;
+        return matcher.matches();
     }
 }

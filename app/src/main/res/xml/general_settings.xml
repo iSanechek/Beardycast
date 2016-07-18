@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceScreen
+        android:title="Работа с сетью" >
+        <PreferenceCategory
+            android:title="Подкасты">
+            <CheckBoxPreference
+                android:key="streaming_only_wifi"
+                android:title="@string/podcast_streaming_only_wifi_title"
+                android:summary="@string/podcast_streaming_only_wifi_summary"
+                android:defaultValue="false" />
+            <CheckBoxPreference
+                android:key="download_only_wifi"
+                android:title="@string/podcast_download_only_wifi_title"
+                android:summary="@string/podcast_download_only_wifi_summary"
+                android:defaultValue="false" />
+        </PreferenceCategory>
+        <PreferenceCategory android:title="Изображения">
+            <Preference android:key="show_image_only_wifi"
+                android:title="@string/image_show_only_wifi_title"
+                android:summary="@string/image_show_only_wifi_summary"
+                android:defaultValue="false" />
+        </PreferenceCategory>
+    </PreferenceScreen>
+
+</PreferenceScreen>

@@ -23,7 +23,4 @@ public interface Api {
     Observable<String> getDateLastPost();
     /*Podcast List Feed*/
     Observable<ArrayList<RssItemParser>> getListPodcast(String url);
-
-    /*For test*/
-    Observable<JSONObject> getArticleObject(String url);
 }
