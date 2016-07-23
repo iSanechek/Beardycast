@@ -13,4 +13,20 @@
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
 
     </style>
+
+
+    <style name="AppTheme.Details" parent="AppTheme.NoActionBar" >
+        <item name="android:windowSharedElementsUseOverlay">false</item>
+        <item name="android:windowReenterTransition">@transition/details_content_reenter_transition</item>
+        <item name="android:windowExitTransition">@transition/details_content_exit_transition</item>
+        <item name="android:windowSharedElementExitTransition">@transition/details_shared_element_exit_transition</item>
+        <item name="android:windowSharedElementReenterTransition">@transition/details_shared_element_reenter_transition</item>
+    </style>
+
+    <style name="AppTheme.Player" >
+        <item name="android:windowEnterTransition">@transition/player_content_enter_transition</item>
+        <item name="android:windowReturnTransition">@transition/player_content_return_transition</item>
+        <item name="android:windowSharedElementEnterTransition">@transition/player_shared_element_enter_transition</item>
+        <item name="android:windowSharedElementReturnTransition">@transition/player_shared_element_return_transition</item>
+    </style>
 </resources>

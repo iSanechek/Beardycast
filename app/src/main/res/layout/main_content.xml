@@ -8,7 +8,7 @@
     android:paddingBottom="0dp"
     android:paddingTop="0dp"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context=".ui.articlelist.ListArtActivity"
+    tools:context=".ui.articlelist.ArticleListActivity"
     tools:showIn="@layout/main_activity">
 
     <!--<co.moonmonkeylabs.realmrecyclerview.RealmRecyclerView-->
@@ -19,7 +19,16 @@
         <!--app:rrvLayoutType="LinearLayout"-->
         <!--app:rrvEmptyLayoutId="@layout/empty_view" />-->
 
-    <android.support.v4.widget.SwipeRefreshLayout
+    <!--<android.support.v4.widget.SwipeRefreshLayout-->
+        <!--android:id="@+id/refresh_layout"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent">-->
+        <!--<android.support.v7.widget.RecyclerView-->
+            <!--android:id="@+id/article_list"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent" />-->
+    <!--</android.support.v4.widget.SwipeRefreshLayout>-->
+    <com.isanechek.beardycast.ui.widget.refreshview.PullToRefreshView
         android:id="@+id/refresh_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -27,5 +36,6 @@
             android:id="@+id/article_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
-    </android.support.v4.widget.SwipeRefreshLayout>
+    </com.isanechek.beardycast.ui.widget.refreshview.PullToRefreshView>
+
 </RelativeLayout>

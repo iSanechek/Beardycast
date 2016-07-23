@@ -2,7 +2,7 @@ package com.isanechek.beardycast.ui.details;
 
 import android.support.annotation.NonNull;
 
-import com.isanechek.beardycast.data.ModelT;
+import com.isanechek.beardycast.data.Model;
 import com.isanechek.beardycast.data.api.ApiImpl;
 import com.isanechek.beardycast.ui.Presenter;
 import com.isanechek.beardycast.utils.RxUtil;
@@ -20,14 +20,14 @@ public class DetailsPresenter implements Presenter {
     private static final String TAG = "DetailsPresenter";
 
     private final DetailsActivity view;
-    private final ModelT model;
+    private final Model model;
     private final String id;
     private Subscription isNetworkUsed;
     private Subscription loadData;
     private Subscription loadDetailsData;
     private ApiImpl api;
 
-    public DetailsPresenter(DetailsActivity view, ModelT model, String id) {
+    public DetailsPresenter(DetailsActivity view, Model model, String id) {
         this.view = view;
         this.model = model;
         this.id = id;
@@ -37,15 +37,16 @@ public class DetailsPresenter implements Presenter {
     @Override
     public void onCreate() {
         logD(TAG, "onCreate");
+        isNetworkUsed = model.isNetworkUsed()
+                .subscribe(view::showProgress);
+        loadData(id);
     }
 
     @Override
     public void onResume() {
         logD(TAG, "onResume");
 
-        isNetworkUsed = model.isNetworkUsed()
-                .subscribe(view::showProgress);
-        loadData(id);
+
     }
 
 

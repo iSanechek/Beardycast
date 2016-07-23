@@ -1,5 +1,6 @@
 package com.isanechek.beardycast.utils;
 
+import android.content.Context;
 import android.os.Build;
 import android.util.DisplayMetrics;
 
@@ -52,6 +53,11 @@ public class Util {
 
     public static int dpToPix(int dp, DisplayMetrics metrics) {
         return (dp * metrics.densityDpi) / DisplayMetrics.DENSITY_DEFAULT;
+    }
+
+    public static int convertDpToPixel(Context context, int dp) {
+        float density = context.getResources().getDisplayMetrics().density;
+        return Math.round((float) dp * density);
     }
 
     public static String getPodName(String name) {

@@ -17,11 +17,17 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-            <ImageView
-                android:id="@+id/list_art_img"
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:scaleType="fitXY"/>
+                android:layout_height="wrap_content">
+                <ImageView
+                    android:id="@+id/list_art_img"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:scaleType="fitXY"
+                    android:fitsSystemWindows="true"
+                    android:src="@drawable/holder1"/>
+            </FrameLayout>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -48,7 +54,6 @@
                 android:maxLines="3"
                 android:textSize="14sp"
                 android:paddingLeft="8dp"
-                android:paddingTop="2dp"
                 android:paddingRight="8dp"
                 android:paddingBottom="8dp"
                 app:typeface="roboto_light"/>
@@ -68,18 +73,18 @@
             android:orientation="horizontal"
             android:layout_weight="1" >
 
-            <me.kaede.tagview.TagView
-                android:id="@+id/list_art_tags"
+            <HorizontalScrollView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:padding="4dp"
-                app:lineMargin="8dp"
-                app:tagMargin="3dp"
-                app:textPaddingBottom="3dp"
-                app:textPaddingLeft="8dp"
-                app:textPaddingRight="8dp"
-                app:textPaddingTop="3dp" />
+                android:layout_gravity="center">
+                <LinearLayout
+                    android:id="@+id/list_category_container"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_gravity="center_vertical"/>
+            </HorizontalScrollView>
+
 
         </LinearLayout>
 

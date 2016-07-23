@@ -13,6 +13,14 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:replace="android:icon">
+        <activity android:name=".testlab.TestViewBind"
+            android:label="TestBind">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".testlab.ScrollingActivity"
             android:label="TestActivity"
@@ -24,7 +32,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.articlelist.ListArtActivity"
+            android:name=".ui.articlelist.ArticleListActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -38,11 +46,14 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".ui.details.DetailsActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.Details" />
         <activity
             android:name=".ui.splash.SplashActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".pref.PreferencesActivity" />
+
+        <activity android:name=".ui.podcast.PlayerActivity"
+            android:theme="@style/AppTheme.Player" />
 
     </application>
 

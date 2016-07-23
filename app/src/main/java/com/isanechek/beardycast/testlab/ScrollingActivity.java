@@ -16,22 +16,20 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.annimon.stream.Stream;
-import com.annimon.stream.function.Consumer;
-import com.annimon.stream.function.Predicate;
+import com.bumptech.glide.Glide;
 import com.isanechek.beardycast.R;
 import com.isanechek.beardycast.data.parser.Parser;
 import com.isanechek.beardycast.ui.imageviewer.ImageViewer;
+import com.isanechek.beardycast.utils.UrlUtil;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.nodes.Node;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
@@ -50,6 +48,13 @@ public class ScrollingActivity extends AppCompatActivity {
     private static final String MP3 = "([^\\s]+(\\.(?i)(mp3))$)";
     private static final String UL_TAG = "<ul>";
     private static final String PATTER_ONE = "<div class=\"article-entry\"[^>]*?>[\\s\\S]*?<!-- toc -->([\\s\\S]*?)<!-- tocstop -->[\\s\\S]*?(<h1[\\s\\S]*?)<hr";
+    private static final String PATTERN_P = "(<p>[\\s\\S]*?</p>)";
+    private static final String PATTERN_UL = "(<ul>[\\s\\S]*?</ul>)";
+    private static final String P_T_T = "";
+
+
+    private int coubt = 0;
+    private int sizeZ = 0;
 
     private DisplayMetrics metrics;
     private LinearLayout container;
@@ -62,6 +67,8 @@ public class ScrollingActivity extends AppCompatActivity {
         setContentView(R.layout.activity_scrolling);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        coubt = 0;
 
         metrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(metrics);
@@ -80,7 +87,7 @@ public class ScrollingActivity extends AppCompatActivity {
         String json = null;
 
         try {
-            InputStream is = getAssets().open("article.html");
+            InputStream is = getAssets().open("obzor-moto-g4-plus.html");
             int size = is.available();
             byte[] buffer = new byte[size];
             is.read(buffer);
@@ -105,8 +112,11 @@ public class ScrollingActivity extends AppCompatActivity {
 
             Document document = Jsoup.parse(body);
             Element element = document.getElementsByClass("article-entry").first();
-            Elements elements = element.select("p, ul, blockquote, h1, h2, h4");
-            Stream.of(elements)
+            Elements elements = element.select("p, ul, blockquote, iframe, figure, ol, h1, h2, h3, h4");
+
+            Elements testEl = element.children();
+
+            Stream.of(testEl)
                     .forEach(cache::add);
             /*For test*/
 //            Stream.of(elements)
@@ -131,10 +141,6 @@ public class ScrollingActivity extends AppCompatActivity {
             return cache;
         }
         return null;
-    }
-
-    private void msg(String s) {
-        Log.d(TAG, "msg: " + s);
     }
 
     private void startTask() {
@@ -169,47 +175,175 @@ public class ScrollingActivity extends AppCompatActivity {
             switch (elementName) {
                 case "p":
                     if (isCheck(Parser.backString(e), IMG)) {
-                        View v = createImage(e);
-                        createTestImage(e);
-                        buildUiHelper(v, true);
+
+                        LinearLayout layout = new LinearLayout(ScrollingActivity.this);
+                        layout.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                        layout.setOrientation(LinearLayout.VERTICAL);
+                        layout.setPadding(1,1,0,1);
+                        layout.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+
+                        LinearLayout layout2 = new LinearLayout(ScrollingActivity.this);
+                        layout2.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                        layout2.setOrientation(LinearLayout.VERTICAL);
+
+
+                        int height = dpToPix(150, metrics);
+                        ImageView iv = new ImageView(ScrollingActivity.this);
+                        iv.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height));
+                        iv.setScaleType(ImageView.ScaleType.FIT_XY);
+                        String u = Parser.tryUrl(Parser.backString(e));
+                        Glide.with(ScrollingActivity.this)
+                                .load(u)
+                                .asBitmap()
+                                .thumbnail(0.1f)
+                                .placeholder(R.drawable.h1)
+                                .error(R.drawable.holder1)
+                                .centerCrop()
+                                .into(iv);
+
+                        layout2.addView(iv);
+                        layout.addView(layout2);
+
+                        String stroka = e.select("img").attr("alt");
+                        if (stroka.length() != 0) {
+                            int height1 = dpToPix(1, metrics);
+                            View view = new View(ScrollingActivity.this);
+                            view.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height1));
+                            view.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                            layout.addView(view);
+
+                            LinearLayout layout1 = new LinearLayout(ScrollingActivity.this);
+                            layout1.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                            layout1.setOrientation(LinearLayout.VERTICAL);
+                            layout1.setBackgroundColor(Color.parseColor("#FFFFFF"));
+
+                            TextView textView = new TextView(ScrollingActivity.this);
+                            textView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                            textView.setTextSize(12f);
+                            textView.setPadding(8,8,8,8);
+                            textView.setText(stroka);
+                            layout1.addView(textView);
+                            layout.addView(layout1);
+                        }
+                        container.addView(layout);
                     } else {
                         if (blockquoteStatus) {
-                            TextView t = createTextView(e, true);
-                            buildUiHelper(t, true);
+                            LinearLayout blockquoteLL = new LinearLayout(ScrollingActivity.this);
+                            blockquoteLL.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                                    ViewGroup.LayoutParams.WRAP_CONTENT));
+                            blockquoteLL.setOrientation(LinearLayout.HORIZONTAL);
+
+                            ImageView ivi = new ImageView(ScrollingActivity.this);
+                            ivi.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                                    ViewGroup.LayoutParams.WRAP_CONTENT));
+                            ivi.setImageDrawable(getResources().getDrawable(R.drawable.ic_format_quote_white_24dp));
+                            blockquoteLL.addView(ivi);
+
+                            TextView tvt = new TextView(ScrollingActivity.this);
+                            tvt.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                                    ViewGroup.LayoutParams.WRAP_CONTENT));
+                            tvt.setPadding(8,8,8,8);
+                            tvt.setTextSize(16f);
+                            Spanned stvtText = getText(e);
+                            tvt.setText(stvtText);
+                            blockquoteLL.addView(tvt);
+                            container.addView(blockquoteLL);
                             blockquoteStatus = false;
                         } else {
-                            TextView textView = createTextView(e, false);
-                            buildUiHelper(textView, true);
+                            TextView tvt = new TextView(ScrollingActivity.this);
+                            tvt.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                                    ViewGroup.LayoutParams.WRAP_CONTENT));
+                            tvt.setPadding(8,2,8,2);
+                            tvt.setTextSize(16f);
+                            Spanned tvtText = getText(e);
+                            tvt.setText(tvtText);
+                            container.addView(tvt);
                         }
                     }
+                    break;
+                case "ol":
+
+                    for (Element tt : e.children()) {
+                        TextView textView = new TextView(ScrollingActivity.this);
+                        textView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                                ViewGroup.LayoutParams.WRAP_CONTENT));
+                        textView.setPadding(8,8,8,8);
+                        textView.setTextSize(16f);
+                        Spanned text = getText(e);
+                        textView.setText(text);
+                        textView.setTextColor(Color.CYAN);
+                        container.addView(textView);
+
+                    }
+
+                    break;
+                case "figure":
+                    String t = e.getElementsByClass("line").last().text();
+                    Log.w(TAG, "figure: " + t);
+
                     break;
                 case "ul":
-                    Elements ee = e.children();
+                    createUlHell(e, false);
 
-                    LinearLayout linearLayout = new LinearLayout(ScrollingActivity.this);
-                    linearLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
-                            LinearLayout.LayoutParams.WRAP_CONTENT));
-                    linearLayout.setOrientation(LinearLayout.VERTICAL);
-                    for (Element element : ee) {
-
-                        Elements elements = element.select("a, li");
-
-                        for (Element element1 : elements) {
-                            String element1Name = element1.tagName();
-                            if (element1Name.equals("a")) {
-                                TextView textView = new TextView(ScrollingActivity.this);
-                                textView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-                                        ViewGroup.LayoutParams.WRAP_CONTENT));
-                                textView.setPadding(8,8,8,8);
-                                textView.setText(getText(element1));
-                                linearLayout.addView(textView);
-                            }
-                        }
-                    }
-                    buildUiHelper(linearLayout, false);
+//                    LinearLayout ll = new LinearLayout(ScrollingActivity.this);
+//                    ll.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+//                            ViewGroup.LayoutParams.WRAP_CONTENT));
+//                    ll.setOrientation(LinearLayout.VERTICAL);
+//                    ll.setPadding(8,0,8,0);
+//                    if (coubt == 0) {
+//                        coubt++;
+//                        Elements ee = e.children();
+//                        for (Element el2 : ee) {
+//                            Elements e43 = el2.children();
+//                            for (Element d32 :e43) {
+//                                String tagName1 = d32.tagName();
+//                                if (tagName1.equals("a")) {
+//                                    TextView tv = new TextView(ScrollingActivity.this);
+//                                    tv.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+//                                            ViewGroup.LayoutParams.WRAP_CONTENT));
+//                                    tv.setPadding(8,2,8,2);
+//                                    tv.setTextSize(16f);
+//                                    Spanned text = getText(d32);
+//                                    tv.setText(text);
+//                                    ll.addView(tv);
+//                                } else if (tagName1.equals("ul")) {
+//                                    for (Element f44 : d32.children()) {
+//                                        TextView tv1 = new TextView(ScrollingActivity.this);
+//                                        tv1.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+//                                                ViewGroup.LayoutParams.WRAP_CONTENT));
+//                                        tv1.setPadding(16,2,16,2);
+//                                        tv1.setTextSize(12f);
+//                                        Spanned text1 = getText(f44);
+//                                        tv1.setText(text1);
+//                                        ll.addView(tv1);
+//                                    }
+//                                }
+//                            }
+//                        }
+//                    } else {
+//                        TextView tv2 = new TextView(ScrollingActivity.this);
+//                        tv2.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+//                        tv2.setPadding(8,2,8,2);
+//                        tv2.setTextSize(16f);
+//                        Spanned text2 = getText(e);
+//                        tv2.setText(text2);
+//                        ll.addView(tv2);
+//                    }
+//
+//                    buildUiHelper(ll, false);
                     break;
                 case "blockquote":
-                    blockquoteStatus = true;
+                    for (Element element : e.children()) {
+                        String eName = element.tagName();
+                        if (eName.equals("ul")) {
+                            Log.e(TAG, "create hall: " + element);
+                            createUlHell(element, true);
+                        } else {
+                            Log.e(TAG, "not hell");
+                            blockquoteStatus = true;
+                        }
+                    }
+
                     break;
                 case "h1":
                     TextView textView2 = new TextView(ScrollingActivity.this);
@@ -227,13 +361,313 @@ public class ScrollingActivity extends AppCompatActivity {
                     textView3.setText(getText(e));
                     buildUiHelper(textView3, false);
                     break;
-                case "h4":
+                case "h3":
 
+                    TextView textView = new TextView(ScrollingActivity.this);
+                    textView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                    textView.setPadding(8,8,8,8);
+                    textView.setTextSize(16f);
+                    Spanned text = getText(e);
+                    textView.setText(text);
+                    buildUiHelper(textView, false);
+                    break;
+                case "h4":
+                    Log.d(TAG, "H4: " + e.toString());
+                    break;
+                case "iframe":
+                    String url = e.attr("src");
+                    Log.e(TAG, UrlUtil.isImgurUrl(url) ? "isImgurUrl TRUE" : "isImgurUrl FALSE");
+                    Log.e(TAG, UrlUtil.isYouTubeUrl(url) ? "isYouTubeUrl TRUE" : "isYouTubeUrl FALSE");
                     break;
                 default:
                     break;
             }
         }
+    }
+
+
+    /*-----------------------------START----------------------------*/
+    private void createUlHell(Element element) {
+        Elements rootElements = element.children();
+        msg("rootElements", element);
+        if (rootElements.size() != 0) {
+            for (Element e1 : rootElements) {
+                String e1Name = e1.tagName();
+                switch (e1Name) {
+                    case "a":
+                        Log.w(TAG, "e1Name a: " + e1);
+                        break;
+                    case "li":
+                        break;
+                    case "ul":
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+
+        } else {
+            msge("rootElements");
+        }
+
+    }
+
+//    private TextView createTV(Spanned text, int left) {
+//        TextView textView = new TextView(this);
+//        textView.setLayoutParams(new ViewGroup.LayoutParams());
+//    }
+//
+
+    /*-----------------------------END----------------------------*/
+
+    /*HELL*/
+    private void createUlHell(Element element, boolean blockquote) {
+        ViewGroup.LayoutParams layoutParamsM = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT);
+        ViewGroup.LayoutParams layoutParamsW = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT);
+
+        LinearLayout layout = new LinearLayout(ScrollingActivity.this);
+        layout.setLayoutParams(layoutParamsM);
+        layout.setOrientation(LinearLayout.VERTICAL);
+        layout.setPadding(1,1,1,1);
+//
+//        if (blockquote) {
+//            ImageView imageView = new ImageView(ScrollingActivity.this);
+//            imageView.setLayoutParams(layoutParamsW);
+//            imageView.setImageDrawable(getResources().getDrawable(R.drawable.ic_format_quote_white_24dp));
+//            imageView.setBackground(null);
+//            imageView.setPadding(8,8,8,8);
+//            layout.addView(imageView);
+//        }
+
+
+        Elements ee34 = element.children();  // children ul tag
+
+        for (Element element1 : ee34) {
+            msg("element1", element1);
+        }
+
+        if (ee34.size() != 0) {
+            for (Element dd1 : ee34) {
+                String dd1Name = dd1.tagName(); // li tag
+                msg("dd1", dd1);
+                if (dd1Name.equals("li")) {
+                    Elements ff34 = dd1.children(); // children li tag
+                    if (ff34.size() != 0) {
+                        for (Element ss3 : ff34) {
+                            String ss2Name = ss3.tagName();
+                            Log.i(TAG, "ss2Name5: " + ss2Name);
+                            switch (ss2Name) {
+                                case "a": {
+                                    Log.w(TAG, "one: " + ss3);
+                                    Spanned text = getText(ss3);
+                                    TextView textView = new TextView(ScrollingActivity.this);
+                                    textView.setLayoutParams(layoutParamsW);
+                                    textView.setPadding(8, 8, 8, 8);
+                                    textView.setTextSize(16f);
+                                    textView.setText(text);
+                                    layout.addView(textView);
+                                    break;
+                                }
+                                case "ul":
+                                    Elements gf45 = ss3.children();
+                                    if (gf45.size() > 0) {
+                                        for (Element g5 : gf45) {
+                                            String q5Name = g5.tagName();
+                                            Log.i(TAG, "q5Name: " + q5Name);
+                                            if (q5Name.equals("a")) {
+                                                Log.w(TAG, "two: " + g5);
+                                                Spanned text = getText(g5);
+                                                TextView textView = new TextView(ScrollingActivity.this);
+                                                textView.setLayoutParams(layoutParamsW);
+                                                textView.setPadding(12, 8, 8, 8);
+                                                textView.setTextSize(12f);
+                                                textView.setText(text);
+                                                layout.addView(textView);
+                                                Log.w(TAG, "g5: " + text);
+                                            } else if (q5Name.equals("ul")) {
+                                                Elements r5te = g5.children();
+                                                if (r5te.size() > 0) {
+                                                    for (Element el678 : r5te) {
+                                                        String rr0 = el678.tagName();
+                                                        if (rr0.equals("a")) {
+                                                            Spanned text = getText(el678);
+                                                            TextView textView = new TextView(ScrollingActivity.this);
+                                                            textView.setLayoutParams(layoutParamsW);
+                                                            textView.setPadding(16, 8, 8, 8);
+                                                            textView.setTextSize(12f);
+                                                            textView.setText(text);
+                                                            layout.addView(textView);
+                                                            Log.w(TAG, "el678: " + text);
+                                                        } else {
+                                                        /*Кто-то ебанулся со вложениями*/
+                                                        }
+                                                    }
+                                                }
+                                            } else if (q5Name.equals("li")) {
+
+                                                for (Element e95 : g5.children()) {
+                                                    String e95Name = e95.tagName();
+                                                    switch (e95Name) {
+                                                        case "a":
+                                                            Spanned text = getText(e95);
+                                                            TextView textView = new TextView(ScrollingActivity.this);
+                                                            textView.setLayoutParams(layoutParamsW);
+                                                            textView.setPadding(8, 8, 8, 8);
+                                                            textView.setTextSize(12f);
+                                                            textView.setText(text);
+                                                            layout.addView(textView);
+                                                            break;
+                                                        case "ul":
+                                                            for (Element e076 : e95.children()) {
+                                                                String e076Name = e076.tagName();
+                                                                switch (e076Name) {
+                                                                    case "li":
+                                                                        break;
+                                                                    case "a" :
+                                                                        break;
+                                                                    case "ul":
+                                                                        break;
+                                                                    default:
+                                                                        break;
+                                                                }
+                                                            }
+                                                            break;
+                                                        default:
+                                                            break;
+                                                    }
+                                                }
+
+                                                TextView textView = new TextView(ScrollingActivity.this);
+                                                textView.setLayoutParams(layoutParamsW);
+                                                textView.setPadding(8, 8, 8, 8);
+                                                textView.setTextSize(16f);
+                                                Spanned text = getText(g5);
+                                                textView.setText(text);
+                                                layout.addView(textView);
+                                            }
+                                        }
+                                    }
+                                    break;
+                                case "li": {
+
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        buildUiHelper(layout, false);
+
+
+    }
+
+    private void msge(String name) {
+        Log.e(TAG, name + " NULL");
+    }
+    private void msg(String name, Element element) {
+        for (Element e : element.children()) {
+            Log.w(TAG, name + " " + e);
+            Log.i(TAG, name + " " + e.tagName());
+        }
+    }
+
+    /*HELL END*/
+
+    /*Img Or Text*/
+    private void createTextView(Element element) {
+        if (isCheck(Parser.backString(element), IMG)) {
+            int height = dpToPix(150, metrics);
+            ImageView iv = new ImageView(ScrollingActivity.this);
+            iv.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height));
+            iv.setPadding(8,8,8,8);
+            String u = Parser.tryUrl(Parser.backString(element));
+            Glide.with(ScrollingActivity.this)
+                    .load(u)
+                    .asBitmap()
+                    .thumbnail(0.1f)
+                    .placeholder(R.drawable.h1)
+                    .error(R.drawable.holder1)
+                    .centerCrop()
+                    .into(iv);
+            Log.e(TAG, "Tag P text: " + element.toString());
+
+            container.addView(iv);
+
+//                        View v = createImage(e);
+//                        createTestImage(e);
+//                        Log.e(TAG, "create Image");
+//                        buildUiHelper(v, true);
+        } else {
+            TextView tvt = new TextView(ScrollingActivity.this);
+            tvt.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT));
+            tvt.setPadding(8,2,8,2);
+            tvt.setTextSize(16f);
+            Spanned tvtText = getText(element);
+            tvt.setText(tvtText);
+            container.addView(tvt);
+        }
+    }
+    /*Img Or Text End*/
+
+
+    /*Block Quote*/
+    ViewGroup.LayoutParams layoutParamsM = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT);
+    ViewGroup.LayoutParams layoutParamsW = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT);
+
+    private TextView createBlockquoteTextView(Spanned text, float textSize, int leftadding) {
+        TextView textView = new TextView(ScrollingActivity.this);
+        textView.setLayoutParams(layoutParamsW);
+        textView.setPadding(leftadding,8,8,8);
+        textView.setTextSize(textSize);
+        textView.setText(text);
+        return textView;
+    }
+
+    private CardView createBlockquoteContainerBackground() {
+        CardView cardView = new CardView(ScrollingActivity.this);
+        cardView.setLayoutParams(layoutParamsM);
+        cardView.setCardBackgroundColor(Color.parseColor("#EEEEEE"));
+        cardView.setPadding(8,8,8,8);
+        return cardView;
+    }
+
+    private LinearLayout createBlockquoteContainer() {
+        LinearLayout layout = new LinearLayout(ScrollingActivity.this);
+        layout.setLayoutParams(layoutParamsM);
+        layout.setOrientation(LinearLayout.HORIZONTAL);
+        layout.setPadding(1,1,1,1);
+
+        ImageView imageView = new ImageView(ScrollingActivity.this);
+        imageView.setLayoutParams(layoutParamsW);
+        imageView.setPadding(8,8,8,8);
+        imageView.setImageDrawable(getResources().getDrawable(R.drawable.ic_format_quote_white_24dp));
+        imageView.setBackground(null);
+        layout.addView(imageView);
+        return layout;
+    }
+    /*Block Quote End*/
+
+    private void logD(String s) {
+        Log.d(TAG, s);
+    }
+
+    private String getStringMatched(Element element, String patternS) {
+        Pattern pattern = Pattern.compile(patternS);
+        Matcher matcher = pattern.matcher(element.toString());
+        if (matcher.matches()) {
+            return matcher.group();
+        }
+
+        return null;
     }
 
     private Spanned getText(Element element) {

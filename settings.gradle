@@ -1,2 +1,1 @@
-include ':app', ':tag'
-project(':tag').projectDir = new File('app/libs/tag')
+include ':app'

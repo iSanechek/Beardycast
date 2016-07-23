@@ -6,8 +6,6 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 import com.isanechek.beardycast.data.network.OkHttp;
-import com.squareup.leakcanary.LeakCanary;
-import com.squareup.leakcanary.RefWatcher;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
@@ -22,7 +20,6 @@ public class App extends Application {
     private static App instance;
     private static SharedPreferences preferences;
 
-    private RefWatcher refWatcher;
 
     public App() {
         instance = this;
@@ -32,8 +29,6 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         OkHttp.init();
-
-        refWatcher = LeakCanary.install(this);
 
         RxJavaPlugins.getInstance().registerErrorHandler(new RxJavaErrorHandler() {
             @Override
@@ -55,10 +50,5 @@ public class App extends Application {
         if(preferences ==null)
             preferences = PreferenceManager.getDefaultSharedPreferences(instance.getApplicationContext());
         return preferences;
-    }
-
-    public static RefWatcher getRefWAtcher(Context context) {
-        App app = (App) context.getApplicationContext();
-        return app.refWatcher;
     }
 }

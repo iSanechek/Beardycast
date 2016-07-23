@@ -58,11 +58,16 @@
 
             </LinearLayout>
 
-            <me.kaede.tagview.TagView
-                android:id="@+id/details_tags_container"
-                android:layout_width="match_parent"
+            <HorizontalScrollView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp" />
+                android:scrollbars="none">
+                <LinearLayout
+                    android:id="@+id/category_container_d"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"/>
+            </HorizontalScrollView>
 
             <LinearLayout
                 android:id="@+id/content_container"
