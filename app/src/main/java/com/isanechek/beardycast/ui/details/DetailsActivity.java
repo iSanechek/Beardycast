@@ -2,7 +2,6 @@ package com.isanechek.beardycast.ui.details;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
@@ -14,7 +13,6 @@ import android.text.Spanned;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -30,23 +28,19 @@ import com.bumptech.glide.Glide;
 import com.isanechek.beardycast.R;
 import com.isanechek.beardycast.data.Model;
 import com.isanechek.beardycast.data.model.article.Article;
-import com.isanechek.beardycast.data.parser.Parser;
 import com.isanechek.beardycast.pref.PreferencesActivity;
-import com.isanechek.beardycast.ui.imageviewer.ImageViewer;
 import com.isanechek.beardycast.ui.BaseActivity;
+import com.isanechek.beardycast.ui.imageviewer.ImageViewer;
 import com.isanechek.beardycast.ui.widget.BadgeDrawable;
 import com.isanechek.beardycast.utils.Util;
 
 import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import me.zhanghai.android.materialprogressbar.MaterialProgressBar;
-
-import static com.isanechek.beardycast.utils.Util.dpToPix;
 
 /**
  * Created by isanechek on 14.06.16.
@@ -75,7 +69,6 @@ public class DetailsActivity extends BaseActivity implements AppBarLayout.OnOffs
 
     private TextView mTitle;
     private String mTileText;
-    private boolean mIsTheTitleVisible = false;
     private int coubt = 0;
 
     public static Intent startActivity(Context context, String link) {
@@ -94,7 +87,9 @@ public class DetailsActivity extends BaseActivity implements AppBarLayout.OnOffs
     private HorizontalScrollView mTagsContainer;
     private HorizontalScrollView mCategoryContainer;
     private LinearLayout container;
+    private LinearLayout titleContainer;
     private LinearLayout mCategoryAndTagsLayout;
+    private AppBarLayout appBarLayout;
 
     private View mCoverView;
     private View mTitleView;
@@ -105,12 +100,16 @@ public class DetailsActivity extends BaseActivity implements AppBarLayout.OnOffs
 
     private DetailsPresenter presenter;
     private DisplayMetrics metrics;
-
+    private String id;
+    private boolean mIsTheTitleVisible = false;
+    private boolean mIsTheTitleContainerVisible = true;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(LAYOUT);
         initView();
+
+        appBarLayout.addOnOffsetChangedListener(this);
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setDefaultDisplayHomeAsUpEnabled(true);
@@ -119,7 +118,7 @@ public class DetailsActivity extends BaseActivity implements AppBarLayout.OnOffs
         metrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(metrics);
 
-        String id = getIntent().getExtras().getString(ARTICLE_ID);
+        id = getIntent().getExtras().getString(ARTICLE_ID);
         if (id == null) {
             showErrorView(null);
             logD("id все плохо");
@@ -148,7 +147,9 @@ public class DetailsActivity extends BaseActivity implements AppBarLayout.OnOffs
         mTagsContainer = (HorizontalScrollView) findViewById(R.id.list_tags_container_details);
         mCategoryContainer = (HorizontalScrollView) findViewById(R.id.list_category_container_details);
         container = (LinearLayout) findViewById(R.id.content_container);
+        titleContainer = (LinearLayout) findViewById(R.id.title_container);
         mTitle = (TextView) findViewById(R.id.main_textview_title);
+        appBarLayout = (AppBarLayout) findViewById(R.id.app_bar);
 
     }
 
@@ -181,7 +182,6 @@ public class DetailsActivity extends BaseActivity implements AppBarLayout.OnOffs
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
         switch (item.getItemId()) {
             case R.id.list_setting:
                 startSettingsActivity();
@@ -196,13 +196,14 @@ public class DetailsActivity extends BaseActivity implements AppBarLayout.OnOffs
         return super.onOptionsItemSelected(item);
     }
 
-    public void showProgress(boolean show) {
+    void showProgress(boolean show) {
         logD(show ? "VISIBLE PROGRESS" : "INVISIBLE PROGRESS");
         progressBar.setVisibility(show ? View.VISIBLE : View.INVISIBLE);
     }
 
-    public void loadView(Article a) {
+    void loadView(Article a) {
         logD("Load View");
+        presenter.loadDetails(id);
         Glide.with(DetailsActivity.this).load(a.getArtImgLink()).crossFade(1000).into(imageView);
         toolbar.setTitle("");
 
@@ -258,145 +259,8 @@ public class DetailsActivity extends BaseActivity implements AppBarLayout.OnOffs
 
     }
 
-    public void createView(List<Element> list) {
-        ViewGroup.LayoutParams layoutParamsM = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT);
-        ViewGroup.LayoutParams layoutParamsW = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT);
-        boolean blockquoteStatus = false;
+    void createView(List<Element> list) {
 
-        for (Element e : list) {
-            String elementName = e.tagName();
-            switch (elementName) {
-                case TAG_P:
-                    if (isCheck(Parser.backString(e), IMG)) {
-                        int height = dpToPix(150, metrics);
-                        ImageView iv = new ImageView(DetailsActivity.this);
-                        iv.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height));
-                        iv.setPadding(8,8,8,8);
-                        String u = Parser.tryUrl(Parser.backString(e));
-                        Glide.with(DetailsActivity.this)
-                                .load(u)
-                                .asBitmap()
-                                .thumbnail(0.1f)
-                                .placeholder(R.drawable.h1)
-                                .error(R.drawable.holder1)
-                                .centerCrop()
-                                .into(iv);
-                        container.addView(iv);
-                    } else {
-                        if (blockquoteStatus) {
-                            LinearLayout blockquoteLL = new LinearLayout(DetailsActivity.this);
-                            blockquoteLL.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                                    ViewGroup.LayoutParams.WRAP_CONTENT));
-                            blockquoteLL.setOrientation(LinearLayout.HORIZONTAL);
-                            ImageView ivi = new ImageView(DetailsActivity.this);
-                            ivi.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-                                    ViewGroup.LayoutParams.WRAP_CONTENT));
-                            ivi.setImageDrawable(getResources().getDrawable(R.drawable.ic_format_quote_white_24dp));
-                            ivi.setBackground(null);
-                            ivi.setPadding(8,8,8,8);
-                            ivi.setBackgroundColor(Color.parseColor("#EEEEEE"));
-                            blockquoteLL.addView(ivi);
-                            TextView tvt = new TextView(DetailsActivity.this);
-                            tvt.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-                                    ViewGroup.LayoutParams.WRAP_CONTENT));
-                            tvt.setPadding(8,8,8,8);
-                            tvt.setTextSize(16f);
-                            Spanned stvtText = getText(e);
-                            tvt.setText(stvtText);
-                            blockquoteLL.addView(tvt);
-                            container.addView(blockquoteLL);
-                            blockquoteStatus = false;
-                        } else {
-                            TextView tvt = new TextView(DetailsActivity.this);
-                            tvt.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-                                    ViewGroup.LayoutParams.WRAP_CONTENT));
-                            tvt.setPadding(8,2,8,2);
-                            tvt.setTextSize(16f);
-                            Spanned tvtText = getText(e);
-                            tvt.setText(tvtText);
-                            container.addView(tvt);
-                        }
-                    }
-                    break;
-                case TAG_UL:
-                    LinearLayout ll = new LinearLayout(DetailsActivity.this);
-                    ll.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                            ViewGroup.LayoutParams.WRAP_CONTENT));
-                    ll.setOrientation(LinearLayout.VERTICAL);
-                    ll.setPadding(8,0,8,0);
-                    if (coubt == 0) {
-                        coubt++;
-                        Elements ee1 = e.children();
-                        for (Element el2 : ee1) {
-                            Elements e43 = el2.children();
-                            for (Element d32 :e43) {
-                                String tagName1 = d32.tagName();
-                                if (tagName1.equals("a")) {
-                                    TextView tv = new TextView(DetailsActivity.this);
-                                    tv.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-                                            ViewGroup.LayoutParams.WRAP_CONTENT));
-                                    tv.setPadding(8,2,8,2);
-                                    tv.setTextSize(16f);
-                                    Spanned text = getText(d32);
-                                    tv.setText(text);
-                                    ll.addView(tv);
-                                } else if (tagName1.equals("ul")) {
-                                    for (Element f44 : d32.children()) {
-                                        TextView tv1 = new TextView(DetailsActivity.this);
-                                        tv1.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-                                                ViewGroup.LayoutParams.WRAP_CONTENT));
-                                        tv1.setPadding(16,2,16,2);
-                                        tv1.setTextSize(12f);
-                                        Spanned text1 = getText(f44);
-                                        tv1.setText(text1);
-                                        ll.addView(tv1);
-                                    }
-                                }
-                            }
-                        }
-                    } else {
-                        TextView tv2 = new TextView(DetailsActivity.this);
-                        tv2.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-                        tv2.setPadding(8,2,8,2);
-                        tv2.setTextSize(16f);
-                        Spanned text2 = getText(e);
-                        tv2.setText(text2);
-                        ll.addView(tv2);
-                    }
-                    container.addView(ll);
-                    break;
-                case TAG_QUOTE:
-                    blockquoteStatus = true;
-                    break;
-                case TAG_H1:
-                    TextView textView2 = new TextView(DetailsActivity.this);
-                    textView2.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-                            ViewGroup.LayoutParams.WRAP_CONTENT));
-                    textView2.setPadding(8,8,8,8);
-                    textView2.setGravity(Gravity.CENTER_HORIZONTAL);
-                    textView2.setText(getText(e));
-                    container.addView(textView2);
-                    break;
-                case TAG_H2:
-                    TextView textView3 = new TextView(DetailsActivity.this);
-                    textView3.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-                            ViewGroup.LayoutParams.WRAP_CONTENT));
-                    textView3.setPadding(8,8,8,8);
-                    textView3.setText(getText(e));
-                    container.addView(textView3);
-                    break;
-                case TAG_H4:
-
-                    break;
-                case TAG_IFRAME:
-
-                    break;
-                default:
-                    break;
-            }
-        }
     }
 
     private boolean isCheck(String input, String pattern) {
@@ -416,15 +280,15 @@ public class DetailsActivity extends BaseActivity implements AppBarLayout.OnOffs
         return Html.fromHtml(element.toString());
     }
 
-    public void showErrorView(Throwable throwable) {
+    void showErrorView(Throwable throwable) {
         Log.e(TAG, "showErrorView: ", throwable);
     }
 
-    public void logD(String s) {
+    private void logD(String s) {
         Log.d(TAG, s);
     }
 
-    public void logE(String s) {
+    private void logE(String s) {
         Log.e(TAG, s);
     }
 
@@ -433,20 +297,18 @@ public class DetailsActivity extends BaseActivity implements AppBarLayout.OnOffs
         int maxScroll = appBarLayout.getTotalScrollRange();
         float percentage = (float) Math.abs(verticalOffset) / (float) maxScroll;
 
-
+        handleAlphaOnTitle(percentage);
+        handleToolbarTitleVisibility(percentage);
     }
 
     private void handleToolbarTitleVisibility(float percentage) {
         if (percentage >= PERCENTAGE_TO_SHOW_TITLE_AT_TOOLBAR) {
-
             if(!mIsTheTitleVisible) {
                 startAlphaAnimation(mTitle, ALPHA_ANIMATIONS_DURATION, View.VISIBLE);
                 mTitle.setText(mTileText);
                 mIsTheTitleVisible = true;
             }
-
         } else {
-
             if (mIsTheTitleVisible) {
                 startAlphaAnimation(mTitle, ALPHA_ANIMATIONS_DURATION, View.INVISIBLE);
                 mIsTheTitleVisible = false;
@@ -454,7 +316,21 @@ public class DetailsActivity extends BaseActivity implements AppBarLayout.OnOffs
         }
     }
 
-    public static void startAlphaAnimation (View v, long duration, int visibility) {
+    private void handleAlphaOnTitle(float percentage) {
+        if (percentage >= PERCENTAGE_TO_HIDE_TITLE_DETAILS) {
+            if(mIsTheTitleContainerVisible) {
+                startAlphaAnimation(titleContainer, ALPHA_ANIMATIONS_DURATION, View.INVISIBLE);
+                mIsTheTitleContainerVisible = false;
+            }
+        } else {
+            if (!mIsTheTitleContainerVisible) {
+                startAlphaAnimation(titleContainer, ALPHA_ANIMATIONS_DURATION, View.VISIBLE);
+                mIsTheTitleContainerVisible = true;
+            }
+        }
+    }
+
+    private static void startAlphaAnimation(View v, long duration, int visibility) {
         AlphaAnimation alphaAnimation = (visibility == View.VISIBLE)
                 ? new AlphaAnimation(0f, 1f)
                 : new AlphaAnimation(1f, 0f);

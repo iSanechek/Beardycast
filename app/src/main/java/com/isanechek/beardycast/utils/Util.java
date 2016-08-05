@@ -7,6 +7,7 @@ import android.util.DisplayMetrics;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 import java.util.TimeZone;
 
 import static com.isanechek.beardycast.utils.LogUtil.logD;
@@ -38,12 +39,12 @@ public class Util {
     }
 
     public static String getDate(Date date) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMM");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMM", Locale.US);
         return dateFormat.format(date);
     }
 
     public static String getCheckDate(Date date) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMM yyyy");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMM yyyy", Locale.US);
         return dateFormat.format(date);
     }
 

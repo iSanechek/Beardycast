@@ -112,11 +112,11 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     private void logD(String s) {
-        Log.d("Podcast Activity", s);
+        Log.d("Episode Activity", s);
     }
 
     private void logE(String s) {
-        Log.e("Podcast Activity", s);
+        Log.e("Episode Activity", s);
     }
 
 }

@@ -48,29 +48,35 @@ public class ArticleListActivity extends AppCompatActivity implements ArticleLis
         setContentView(LAYOUT);
         msg("HELLO");
         initToolbar();
-        bindView();
-        initRefreshLayout();
-        initView();
-        adapter = null;
+
+        spinner = (Spinner) findViewById(R.id.spinner);
+        progress = (ProgressBar) findViewById(R.id.progressBar);
+        refreshLayout = (PullToRefreshView) findViewById(R.id.refresh_layout);
+        refreshLayout.setRefreshStyle(this, 1);
+        recyclerView = (RecyclerView) findViewById(R.id.article_list);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        adapter = new ArticleListAdapter(this, this);
+        adapter.bindRecyclerView(recyclerView);
+        recyclerView.setAdapter(adapter);
+        refreshLayout.setOnRefreshListener(() -> {
+            refreshLayout.setRefreshing(true);
+//            recyclerView.smoothScrollToPosition(0);
+            presenter.refreshList();
+        });
+
+        adapter.setOnLoadMoreListener(() -> {
+            presenter.loadMore();
+            Log.e(TAG, "Load More");
+        });
+
         presenter.onCreate();
 
-    }
-
-    private void bindView() {
-        spinner = (Spinner) findViewById(R.id.spinner);
-        recyclerView = (RecyclerView) findViewById(R.id.article_list);
-        progress = (ProgressBar) findViewById(R.id.progressBar);
     }
 
     private void initToolbar() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
-    }
-
-    private void initRefreshLayout() {
-        refreshLayout = (PullToRefreshView) findViewById(R.id.refresh_layout);
-        refreshLayout.setRefreshStyle(this, 1);
     }
 
     @Override
@@ -135,22 +141,6 @@ public class ArticleListActivity extends AppCompatActivity implements ArticleLis
             public void onNothingSelected(AdapterView<?> parent) {
 
             }
-        });
-    }
-
-    private void initView() {
-        adapter = new ArticleListAdapter(this, this);
-        adapter.setOnLoadMoreListener(() -> {
-            presenter.loadMore();
-            Log.e(TAG, "Load More");
-        });
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        adapter.bindRecyclerView(recyclerView);
-        recyclerView.setAdapter(adapter);
-        refreshLayout.setOnRefreshListener(() -> {
-            refreshLayout.setRefreshing(true);
-//            recyclerView.smoothScrollToPosition(0);
-            presenter.refreshList();
         });
     }
 

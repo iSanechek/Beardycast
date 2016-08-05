@@ -16,7 +16,7 @@ import static com.isanechek.beardycast.utils.LogUtil.logD;
 /**
  * Created by isanechek on 14.06.16.
  */
-public class DetailsPresenter implements Presenter {
+class DetailsPresenter implements Presenter {
     private static final String TAG = "DetailsPresenter";
 
     private final DetailsActivity view;
@@ -27,7 +27,7 @@ public class DetailsPresenter implements Presenter {
     private Subscription loadDetailsData;
     private ApiImpl api;
 
-    public DetailsPresenter(DetailsActivity view, Model model, String id) {
+    DetailsPresenter(DetailsActivity view, Model model, String id) {
         this.view = view;
         this.model = model;
         this.id = id;
@@ -39,23 +39,21 @@ public class DetailsPresenter implements Presenter {
         logD(TAG, "onCreate");
         isNetworkUsed = model.isNetworkUsed()
                 .subscribe(view::showProgress);
-        loadData(id);
+        loadDataHelper(id);
     }
 
     @Override
     public void onResume() {
         logD(TAG, "onResume");
-
-
     }
 
 
     @Override
     public void onPause() {
         logD(TAG, "onPause");
-        isNetworkUsed.unsubscribe();
-        loadData.unsubscribe();
-        loadDetailsData.unsubscribe();
+        RxUtil.unsubscribe(isNetworkUsed);
+        RxUtil.unsubscribe(loadData);
+        RxUtil.unsubscribe(loadDetailsData);
     }
 
     @Override
@@ -63,19 +61,16 @@ public class DetailsPresenter implements Presenter {
         logD(TAG, "onDestroy");
     }
 
-    private void loadData(@NonNull String url) {
-        logD(TAG, "loadData");
-
+    private void loadDataHelper(@NonNull String url) {
+        logD(TAG, "loadDataHelper");
+        RxUtil.unsubscribe(loadData);
         loadData = model.getArticle(url)
                 .subscribe(view::loadView, view::showErrorView);
-
-        loadDetails(url);
-
     }
 
-    private void loadDetails(String url) {
+    void loadDetails(String url) {
+        logD(TAG, "loadDetails");
         RxUtil.unsubscribe(loadDetailsData);
-
         loadDetailsData = api.getArticleDetails(url)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

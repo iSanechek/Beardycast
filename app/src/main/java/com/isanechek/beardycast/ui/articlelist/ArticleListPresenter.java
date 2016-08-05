@@ -6,6 +6,7 @@ import com.annimon.stream.Stream;
 import com.isanechek.beardycast.data.Model;
 import com.isanechek.beardycast.ui.Presenter;
 import com.isanechek.beardycast.utils.LogUtil;
+import com.isanechek.beardycast.utils.RxUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -59,9 +60,9 @@ public class ArticleListPresenter implements Presenter {
 
     @Override
     public void onPause() {
-        isNetworkUsed.unsubscribe();
-        loadData.unsubscribe();
-        loadMoreData.unsubscribe();
+        RxUtil.unsubscribe(isNetworkUsed);
+        RxUtil.unsubscribe(loadData);
+        RxUtil.unsubscribe(loadMoreData);
     }
 
     @Override
@@ -84,13 +85,14 @@ public class ArticleListPresenter implements Presenter {
 
     void loadMore() {
         msg("Load More Presenter");
+        RxUtil.unsubscribe(loadMoreData);
         loadMoreData = model.loadMoreArticleList()
                 .subscribe(activity::loadMore, activity::showErrorMessage);
     }
 
     private void sectionSelected(@NonNull String url) {
         model.selectSection(url);
-
+        RxUtil.unsubscribe(loadData);
         loadData = model.getSelectedArticleFeed()
                 .subscribe(activity::showList, activity::showErrorMessage);
     }

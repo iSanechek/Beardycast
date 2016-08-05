@@ -42,6 +42,7 @@
                 app:layout_collapseMode="pin"
                 app:popupTheme="@style/AppTheme.PopupOverlay" >
                 <LinearLayout
+                    android:id="@+id/title_container"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:orientation="horizontal"
@@ -63,14 +64,6 @@
         </android.support.design.widget.CollapsingToolbarLayout>
 
     </android.support.design.widget.AppBarLayout>
-
-    <me.zhanghai.android.materialprogressbar.MaterialProgressBar
-        android:id="@+id/details_progress"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal|center"
-        android:indeterminate="true"
-        style="@style/Widget.MaterialProgressBar.ProgressBar" />
 
     <include layout="@layout/details_content"/>
 

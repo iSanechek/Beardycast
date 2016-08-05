@@ -138,7 +138,7 @@
 
     <!--General Settings-->
 
-    <!--Podcast Network-->
+    <!--Episode Network-->
     <string name="podcast_streaming_only_wifi_title">Стриминг только по Wi-Fi</string>
     <string name="podcast_streaming_only_wifi_summary">Стриминг подкастов только по Wi-Fi</string>
     <string name="podcast_download_only_wifi_title">Загрузка только по Wi-Fi</string>

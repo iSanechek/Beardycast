@@ -1,5 +1,6 @@
 package com.isanechek.beardycast.pref;
 
+import android.annotation.SuppressLint;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
@@ -23,7 +24,8 @@ public class PreferencesActivity extends PreferenceActivity {
                 .commit();
     }
 
-    public static class SettingsFragment extends PreferenceFragment {
+    @SuppressLint("ValidFragment")
+    private static class SettingsFragment extends PreferenceFragment {
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);

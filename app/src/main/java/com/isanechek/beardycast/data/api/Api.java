@@ -21,6 +21,6 @@ public interface Api {
     Observable<List<Element>> getArticleDetails(String url);
     /*Last Date Update*/
     Observable<String> getDateLastPost();
-    /*Podcast List Feed*/
+    /*Episode List Feed*/
     Observable<ArrayList<RssItemParser>> getListPodcast(String url);
 }

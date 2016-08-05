@@ -20,4 +20,5 @@ public class Constants {
     /*For podcast*/
     public static final String PODCAST_BEARDYCAST_RSS = "http://beardycast.libsyn.com/rss";
     public static final String PODCAST_BEARDYCARS_RSS = "http://beardycars.libsyn.com/rss";
+
 }

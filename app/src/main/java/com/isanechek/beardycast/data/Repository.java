@@ -5,7 +5,7 @@ import android.support.annotation.UiThread;
 import android.util.Log;
 
 import com.isanechek.beardycast.data.model.article.Article;
-import com.isanechek.beardycast.data.model.podcast.Podcast;
+import com.isanechek.beardycast.data.model.podcast.Episode;
 import com.isanechek.beardycast.utils.LogUtil;
 
 import java.util.HashMap;
@@ -64,17 +64,17 @@ public class Repository implements Cloneable {
     }
 
     @UiThread
-    public Observable<Podcast> getPodcast(@NonNull String id) {
-        return realm.where(Podcast.class).equalTo("idUrlArticle", id).findFirst().asObservable();
+    public Observable<Episode> getPodcast(@NonNull String id) {
+        return realm.where(Episode.class).equalTo("idUrlArticle", id).findFirst().asObservable();
     }
 
     @UiThread
-    public Observable<RealmResults<Podcast>> getPodcastList(@NonNull String namePodcast, boolean forceReload) {
+    public Observable<RealmResults<Episode>> getPodcastList(@NonNull String namePodcast, boolean forceReload) {
         if (forceReload) {
             /*Тут пока непонятно как лучше сделать*/
         }
 
-        RealmResults<Podcast> results = realm.where(Podcast.class).findAll();
+        RealmResults<Episode> results = realm.where(Episode.class).findAll();
         results = results.sort("sortDate", Sort.DESCENDING);
         return results.asObservable();
     }
@@ -89,7 +89,7 @@ public class Repository implements Cloneable {
             article.setPodName(namePodcast);
             r.copyToRealmOrUpdate(article);
         }, error -> {
-            LogUtil.logE(TAG, "Error Update Podcast Info -->> " + error.toString());
+            LogUtil.logE(TAG, "Error Update Episode Info -->> " + error.toString());
         });
     }
 
