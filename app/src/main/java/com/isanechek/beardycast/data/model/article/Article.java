@@ -1,11 +1,11 @@
 package com.isanechek.beardycast.data.model.article;
 
-import java.util.Date;
-
 import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.RealmClass;
+
+import java.util.Date;
 
 /**
  * Created by isanechek on 04.05.16.
@@ -18,20 +18,17 @@ public class Article extends RealmObject {
 
     private String artTitle;
     private String artDescription;
-    private Date artDatePost;
     private String artImgLink;
-
-    private RealmList<ArtTag> tags;
-    private RealmList<ArtCategory> category;
-
-    private Date sortTimeStamp;
-
+    private String podcastId;
+    private boolean isPodcast;
     private boolean isNewArticle;
     private boolean isReadArticle;
     private boolean isSavedArticle;
-    private boolean isPodcast;
-    private String podcastId;
-    private String podName; // Beardycast\Beardycars\TBBT\T-Crowd Show
+
+    private Date artDatePost;
+    private Date sortTimeStamp;
+    private RealmList<ArtTag> tags;
+    private RealmList<ArtCategory> category;
 
     public String getArtLink() {
         return artLink;
@@ -57,14 +54,6 @@ public class Article extends RealmObject {
         this.artDescription = artDescription;
     }
 
-    public Date getArtDatePost() {
-        return artDatePost;
-    }
-
-    public void setArtDatePost(Date artDatePost) {
-        this.artDatePost = artDatePost;
-    }
-
     public String getArtImgLink() {
         return artImgLink;
     }
@@ -73,20 +62,20 @@ public class Article extends RealmObject {
         this.artImgLink = artImgLink;
     }
 
-    public RealmList<ArtTag> getTags() {
-        return tags;
+    public String getPodcastId() {
+        return podcastId;
     }
 
-    public void setTags(RealmList<ArtTag> tags) {
-        this.tags = tags;
+    public void setPodcastId(String podcastId) {
+        this.podcastId = podcastId;
     }
 
-    public RealmList<ArtCategory> getCategory() {
-        return category;
+    public boolean isPodcast() {
+        return isPodcast;
     }
 
-    public void setCategory(RealmList<ArtCategory> category) {
-        this.category = category;
+    public void setPodcast(boolean podcast) {
+        isPodcast = podcast;
     }
 
     public boolean isNewArticle() {
@@ -113,6 +102,14 @@ public class Article extends RealmObject {
         isSavedArticle = savedArticle;
     }
 
+    public Date getArtDatePost() {
+        return artDatePost;
+    }
+
+    public void setArtDatePost(Date artDatePost) {
+        this.artDatePost = artDatePost;
+    }
+
     public Date getSortTimeStamp() {
         return sortTimeStamp;
     }
@@ -121,27 +118,20 @@ public class Article extends RealmObject {
         this.sortTimeStamp = sortTimeStamp;
     }
 
-    public boolean isPodcast() {
-        return isPodcast;
+    public RealmList<ArtTag> getTags() {
+        return tags;
     }
 
-    public void setPodcast(boolean podcast) {
-        isPodcast = podcast;
+    public void setTags(RealmList<ArtTag> tags) {
+        this.tags = tags;
     }
 
-    public String getPodcastId() {
-        return podcastId;
+    public RealmList<ArtCategory> getCategory() {
+        return category;
     }
 
-    public void setPodcastId(String podcastId) {
-        this.podcastId = podcastId;
+    public void setCategory(RealmList<ArtCategory> category) {
+        this.category = category;
     }
 
-    public String getPodName() {
-        return podName;
-    }
-
-    public void setPodName(String podName) {
-        this.podName = podName;
-    }
 }

@@ -9,7 +9,7 @@ import android.view.View;
 import android.widget.ProgressBar;
 
 import com.isanechek.beardycast.R;
-import com.isanechek.beardycast.ui.articlelist.ArticleListActivity;
+import com.isanechek.beardycast.ui.articlelist.nArticleListActivity;
 import com.isanechek.beardycast.utils.Util;
 
 /**
@@ -62,7 +62,7 @@ public class SplashActivity extends AppCompatActivity {
     }
 
     private void startArticleListActivity() {
-        startActivity(new Intent(SplashActivity.this, ArticleListActivity.class));
+        startActivity(new Intent(SplashActivity.this, nArticleListActivity.class));
         if (Util.isAndroid5Plus())
             finishAfterTransition();
         else

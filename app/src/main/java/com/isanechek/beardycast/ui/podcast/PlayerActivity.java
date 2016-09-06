@@ -2,15 +2,15 @@ package com.isanechek.beardycast.ui.podcast;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AppCompatActivity;
 import android.transition.Transition;
 import android.view.View;
 
 import com.isanechek.beardycast.R;
-import com.isanechek.beardycast.ui.BaseActivity;
 import com.isanechek.beardycast.ui.adapters.TransitionAdapter;
 import com.isanechek.beardycast.ui.widget.CoverView;
 
-public class PlayerActivity extends BaseActivity {
+public class PlayerActivity extends AppCompatActivity {
     private static final int LAYOUT = R.layout.player_activity;
     private static final String TAG = "Player Activity";
 
@@ -27,7 +27,7 @@ public class PlayerActivity extends BaseActivity {
         getWindow().getSharedElementEnterTransition().addListener(new TransitionAdapter() {
             @Override
             public void onTransitionEnd(Transition transition) {
-                play();
+//                play();
                 mCoverView.start();
             }
         });
@@ -39,7 +39,7 @@ public class PlayerActivity extends BaseActivity {
     }
 
     public void onFabClick(View view) {
-        pause();
+//        pause();
         mCoverView.stop();
     }
 }

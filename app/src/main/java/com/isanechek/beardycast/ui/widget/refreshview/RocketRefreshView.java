@@ -10,7 +10,6 @@ import android.view.animation.Transformation;
 
 import com.isanechek.beardycast.R;
 import com.isanechek.beardycast.utils.Util;
-import com.mikepenz.iconics.utils.Utils;
 
 /**
  * @author lumeng on 2016-06-16.

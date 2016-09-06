@@ -1,13 +1,9 @@
 package com.isanechek.beardycast.ui.articlelist;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.SpannableString;
-import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,15 +11,10 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-
-import com.annimon.stream.Stream;
 import com.bumptech.glide.Glide;
-import com.devspark.robototextview.widget.RobotoTextView;
 import com.isanechek.beardycast.R;
 import com.isanechek.beardycast.data.model.article.Article;
-import com.isanechek.beardycast.ui.widget.BadgeDrawable;
 import com.isanechek.beardycast.utils.Util;
-
 import io.realm.RealmList;
 
 /**
@@ -36,21 +27,19 @@ class ArticleListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int VIEW_ITEM = 0;
     private static final int VIEW_LOADING = 1;
     private static final int VISIBLE_THRESHOLD = 5;
-    private int countBreak = 0;
 
     private RealmList<Article> articleList;
     private boolean mIsLoading;
     private OnLoadMoreCallback mOnLoadMoreListener;
-    private final OnArticleClickListener clickListener;
+    private OnArticleClickListener mOnClickItemCallback;
     private Context mContext;
 
-    ArticleListAdapter(Context context, OnArticleClickListener clickListener) {
+    public ArticleListAdapter(Context context) {
         articleList = new RealmList<>();
         this.mContext = context;
-        this.clickListener = clickListener;
     }
 
-    void bindRecyclerView(RecyclerView recyclerView) {
+    public void bindRecyclerView(RecyclerView recyclerView) {
         if (recyclerView.getLayoutManager() instanceof LinearLayoutManager) {
             final LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
             recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -71,20 +60,20 @@ class ArticleListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
     }
 
-    void setOnLoadMoreListener(OnLoadMoreCallback onLoadMoreListener) {
+    public void setOnCallbackListener(OnLoadMoreCallback onLoadMoreListener, OnArticleClickListener mOnClickItemCallback) {
         this.mOnLoadMoreListener = onLoadMoreListener;
+        this.mOnClickItemCallback = mOnClickItemCallback;
     }
 
     RealmList<Article> getListArticle() {
         return articleList;
     }
 
-    void setArticleList(RealmList<Article> list) {
-        Log.e(TAG, "setArticleList: " + list.size());
+    public void setArticleList(RealmList<Article> list) {
         articleList = list;
     }
 
-    void setLoaded() {
+    public void setLoaded() {
         mIsLoading = false;
     }
 
@@ -94,8 +83,8 @@ class ArticleListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         if (viewType == VIEW_ITEM) {
             View itemView = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.item, parent, false);
-            holder = new ItemViewHolder(itemView, clickListener);
+                    .inflate(R.layout.article_list_item, parent, false);
+            holder = new ItemViewHolder(itemView);
         } else {
             View loadingView = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.item_loading, parent, false);
@@ -131,21 +120,19 @@ class ArticleListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private class ItemViewHolder extends RecyclerView.ViewHolder {
 
-        RobotoTextView description;
-        RobotoTextView title;
+        TextView description;
+        TextView title;
         TextView date;
         CardView cardView;
         ImageView pic;
-        LinearLayout scrollView;
 
-        ItemViewHolder(View v, final OnArticleClickListener clickListener) {
+        public ItemViewHolder(View v) {
             super(v);
-            description = (RobotoTextView) v.findViewById(R.id.list_description);
-            title = (RobotoTextView) v.findViewById(R.id.list_art_title);
+            description = (TextView) v.findViewById(R.id.list_description);
+            title = (TextView) v.findViewById(R.id.list_art_title);
             date = (TextView) v.findViewById(R.id.list_art_date);
             cardView = (CardView) v.findViewById(R.id.cardView);
             pic = (ImageView) v.findViewById(R.id.list_art_img);
-            scrollView = (LinearLayout) v.findViewById(R.id.list_category_container);
         }
 
         public void setArticle(Article article) {
@@ -154,37 +141,16 @@ class ArticleListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             String d1 = Util.getDate(article.getArtDatePost());
             date.setText(d1);
 
-            LinearLayout layout = new LinearLayout(mContext);
-            layout.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-            layout.setOrientation(LinearLayout.HORIZONTAL);
-
-            Stream.of(article.getTags()).forEach(tag -> {
-                BadgeDrawable drawable = new BadgeDrawable.Builder()
-                        .type(BadgeDrawable.TYPE_ONLY_ONE_TEXT)
-                        .badgeColor(R.color.accent)
-                        .text1(tag.getTagName())
-                        .build();
-
-                SpannableString spannableString = new SpannableString(TextUtils.concat(drawable.toSpannable()));
-
-                TextView textView = new TextView(mContext);
-                textView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-                        ViewGroup.LayoutParams.WRAP_CONTENT));
-                textView.setText(spannableString);
-                textView.setTextSize(12f);
-                textView.setTextColor(Color.parseColor("#EEEEEE"));
-                textView.setPadding(4,4,4,4);
-                layout.addView(textView);
-            });
-            scrollView.addView(layout);
-
             Glide.with(mContext)
                     .load(article.getArtImgLink())
                     .asBitmap()
                     .thumbnail(0.1f)
                     .placeholder(R.drawable.h1)
                     .into(pic);
-            cardView.setOnClickListener(view -> clickListener.onArticleClicked(article.getArtLink()));
+            cardView.setOnClickListener(view -> {
+                mOnClickItemCallback.onArticleClicked(article.getArtLink());
+            });
+
         }
     }
 
@@ -197,11 +163,11 @@ class ArticleListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
     }
 
-    interface OnLoadMoreCallback {
+    public interface OnLoadMoreCallback {
         void onLoadMore();
     }
 
-    interface OnArticleClickListener {
+    public interface OnArticleClickListener {
         void onArticleClicked(final String articleId);
     }
 }

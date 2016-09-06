@@ -1,8 +1,10 @@
 package com.isanechek.beardycast.utils;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DimenRes;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.IntegerRes;
 import android.support.annotation.PluralsRes;
 import android.support.annotation.StringRes;
@@ -15,6 +17,10 @@ public final class ResUtils {
 
     public static int getInteger(Context ctx, @IntegerRes int integerResId) {
         return ctx.getResources().getInteger(integerResId);
+    }
+
+    public static Drawable getDrawable(Context ctx, @DrawableRes int res) {
+        return ctx.getResources().getDrawable(res);
     }
 
     public static String getString(Context ctx, @StringRes int stringResId) {

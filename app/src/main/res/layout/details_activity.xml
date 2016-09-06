@@ -45,18 +45,18 @@
                     android:id="@+id/title_container"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:orientation="horizontal"
-                    >
+                    android:orientation="horizontal">
 
                     <TextView
-                        android:id="@+id/main.textview.title"
+                        android:id="@+id/toolbar_title"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
-                        android:layout_marginLeft="8dp"
+                        android:layout_marginStart="8dp"
+                        android:padding="4dp"
                         android:gravity="center_vertical"
-                        android:textColor="@android:color/white"
-                        android:textSize="20sp"
-                        />
+                        android:textSize="12sp"
+                        android:visibility="gone"
+                        tools:text="Test text" />
 
                 </LinearLayout>
             </android.support.v7.widget.Toolbar>

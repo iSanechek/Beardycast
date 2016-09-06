@@ -32,7 +32,7 @@ public class ServiceNotification {
 
     public ServiceNotification(PlayService context) {
         navigateIntent = new Intent(context, PlayerActivity.class);
-        navigateIntent.setAction(PlayerActivity.ACTION_NAVIGATE_PLAYER);
+//        navigateIntent.setAction(PlayerActivity.ACTION_NAVIGATE_PLAYER);
         navigatePendingIntent = PendingIntent.getActivity(context, 0, navigateIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         _playIntent = new Intent(context, PlayService.class);
@@ -59,20 +59,20 @@ public class ServiceNotification {
         mSmallView = new RemoteViews(context.getPackageName(), R.layout.service_notification);
         mSmallView.setOnClickPendingIntent(R.id.service_notification_playpausebutton, playPendingIntent);
         mSmallView.setOnClickPendingIntent(R.id.service_notification_forwardbutton, forwardPendingIntent);
-        //mSmallView.setImageViewUri(R.id.service_notification_image, Uri.parse(""));
-        mSmallView.setImageViewBitmap(R.id.service_notification_image, image);
-        mSmallView.setTextViewText(R.id.service_notification_title, context.getMediaPlayer().getCurrentEpisode().getTitle());
-        mSmallView.setTextViewText(R.id.service_notification_subtitle, currentFeed.getTitle());
+//        //mSmallView.setImageViewUri(R.id.service_notification_image, Uri.parse(""));
+//        mSmallView.setImageViewBitmap(R.id.service_notification_image, image);
+//        mSmallView.setTextViewText(R.id.service_notification_title, context.getMediaPlayer().getCurrentEpisode().getTitle());
+//        mSmallView.setTextViewText(R.id.service_notification_subtitle, currentFeed.getTitle());
 
         mBigView = new RemoteViews(context.getPackageName(), R.layout.service_notification_expanded);
         mBigView.setOnClickPendingIntent(R.id.service_notification_playpausebutton, playPendingIntent);
         mBigView.setOnClickPendingIntent(R.id.service_notification_forwardbutton, forwardPendingIntent);
         mBigView.setOnClickPendingIntent(R.id.service_notification_backwardbutton, backwardPendingIntent);
         //mBigView.setOnClickPendingIntent(R.id.service_notification_closeButton, closePendingIntent);
-        //mBigView.setImageViewUri(R.id.service_notification_image, Uri.parse(""));
-        mBigView.setImageViewBitmap(R.id.service_notification_image, image);
-        mBigView.setTextViewText(R.id.service_notification_title, context.getMediaPlayer().getCurrentEpisode().getTitle());
-        mBigView.setTextViewText(R.id.service_notification_subtitle, currentFeed.getTitle());
+//        //mBigView.setImageViewUri(R.id.service_notification_image, Uri.parse(""));
+//        mBigView.setImageViewBitmap(R.id.service_notification_image, image);
+//        mBigView.setTextViewText(R.id.service_notification_title, context.getMediaPlayer().getCurrentEpisode().getTitle());
+//        mBigView.setTextViewText(R.id.service_notification_subtitle, currentFeed.getTitle());
         //mBigView.setTextViewText(R.id.service_notification_apptitle, "by " + $context.getText(R.string.app_name));
 
         Resources res = context.getResources();
@@ -90,8 +90,8 @@ public class ServiceNotification {
 
     public void showNotify(Service context) {
         if(Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            mSmallView.setInt(R.id.service_notification_playpausebutton, "setImageResource", R.drawable.ic_pause_white_24dp);
-            mBigView.setInt(R.id.service_notification_playpausebutton, "setImageResource", R.drawable.ic_pause_white_24dp);
+//            mSmallView.setInt(R.id.service_notification_playpausebutton, "setImageResource", R.drawable.ic_pause_white_24dp);
+//            mBigView.setInt(R.id.service_notification_playpausebutton, "setImageResource", R.drawable.ic_pause_white_24dp);
         } else {
             mSmallView.setInt(R.id.service_notification_playpausebutton, "setImageResource", R.drawable.ic_pause_black_24dp);
             mBigView.setInt(R.id.service_notification_playpausebutton, "setImageResource", R.drawable.ic_pause_black_24dp);
@@ -102,14 +102,14 @@ public class ServiceNotification {
         mSmallView.setOnClickPendingIntent(R.id.service_notification_playpausebutton, playPendingIntent);
         mBigView.setOnClickPendingIntent(R.id.service_notification_playpausebutton, playPendingIntent);
         Resources res = context.getResources();
-        mBuilder = new NotificationCompat.Builder(context).setSmallIcon(R.drawable.ic_launcher)
-                .setTicker(res.getString(R.string.app_name))
-                .setContentTitle(res.getString(R.string.app_name))
-                .setCategory(Notification.CATEGORY_TRANSPORT)
-                .setOngoing(true)
-                .setDeleteIntent(closePendingIntent)
-                .setContentIntent(navigatePendingIntent);
-        mNotification = mBuilder.build();
+//        mBuilder = new NotificationCompat.Builder(context).setSmallIcon(R.drawable.ic_launcher)
+//                .setTicker(res.getString(R.string.app_name))
+//                .setContentTitle(res.getString(R.string.app_name))
+//                .setCategory(Notification.CATEGORY_TRANSPORT)
+//                .setOngoing(true)
+//                .setDeleteIntent(closePendingIntent)
+//                .setContentIntent(navigatePendingIntent);
+//        mNotification = mBuilder.build();
         mNotification.contentView = mSmallView;
         mNotification.bigContentView = mBigView;
         context.startForeground(ID_REMOTESERVICE, mNotification);
@@ -119,8 +119,8 @@ public class ServiceNotification {
     public void pauseNotify(Service context)
     {
         if(Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            mSmallView.setInt(R.id.service_notification_playpausebutton, "setImageResource", R.drawable.ic_play_arrow_white_24dp);
-            mBigView.setInt(R.id.service_notification_playpausebutton, "setImageResource", R.drawable.ic_play_arrow_white_24dp);
+//            mSmallView.setInt(R.id.service_notification_playpausebutton, "setImageResource", R.drawable.ic_play_arrow_white_24dp);
+//            mBigView.setInt(R.id.service_notification_playpausebutton, "setImageResource", R.drawable.ic_play_arrow_white_24dp);
         }
         else {
             mSmallView.setInt(R.id.service_notification_playpausebutton, "setImageResource", R.drawable.ic_play_arrow_black_24dp);
@@ -133,14 +133,14 @@ public class ServiceNotification {
         mSmallView.setOnClickPendingIntent(R.id.service_notification_playpausebutton, playPendingIntent);
         mBigView.setOnClickPendingIntent(R.id.service_notification_playpausebutton, playPendingIntent);
         Resources res = context.getResources();
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context).setSmallIcon(R.drawable.ic_launcher)
-                .setTicker(res.getString(R.string.app_name))
-                .setContentTitle(res.getString(R.string.app_name))
-                .setCategory(Notification.CATEGORY_TRANSPORT)
-                .setOngoing(false)
-                .setDeleteIntent(closePendingIntent)
-                .setContentIntent(navigatePendingIntent);
-        mNotification = builder.build();
+//        NotificationCompat.Builder builder = new NotificationCompat.Builder(context).setSmallIcon(R.drawable.ic_launcher)
+//                .setTicker(res.getString(R.string.app_name))
+//                .setContentTitle(res.getString(R.string.app_name))
+//                .setCategory(Notification.CATEGORY_TRANSPORT)
+//                .setOngoing(false)
+//                .setDeleteIntent(closePendingIntent)
+//                .setContentIntent(navigatePendingIntent);
+//        mNotification = builder.build();
         mNotification.contentView = mSmallView;
         mNotification.bigContentView = mBigView;
         context.stopForeground(false);

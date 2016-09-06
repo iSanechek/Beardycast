@@ -3,10 +3,18 @@ package com.isanechek.beardycast;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 
 import com.isanechek.beardycast.data.network.OkHttp;
 
+import com.nostra13.universalimageloader.cache.disc.naming.HashCodeFileNameGenerator;
+import com.nostra13.universalimageloader.cache.memory.impl.UsingFreqLimitedMemoryCache;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import rx.plugins.RxJavaErrorHandler;
@@ -29,6 +37,7 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         OkHttp.init();
+        initImageLoader(this);
 
         RxJavaPlugins.getInstance().registerErrorHandler(new RxJavaErrorHandler() {
             @Override
@@ -50,5 +59,30 @@ public class App extends Application {
         if(preferences ==null)
             preferences = PreferenceManager.getDefaultSharedPreferences(instance.getApplicationContext());
         return preferences;
+    }
+
+    private static DisplayImageOptions.Builder options = new DisplayImageOptions.Builder()
+            .cacheInMemory(true)
+            .resetViewBeforeLoading(true)
+            .cacheOnDisc(true)
+            .bitmapConfig(Bitmap.Config.ARGB_8888)
+            .handler(new Handler())
+            .displayer(new FadeInBitmapDisplayer(500, true, true, false));
+
+    public static DisplayImageOptions.Builder getDefaultOptionsUIL() {
+        return options;
+    }
+
+    public static void initImageLoader(Context context) {
+        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(context)
+                .threadPoolSize(5)
+                .threadPriority(Thread.MIN_PRIORITY)
+                .denyCacheImageMultipleSizesInMemory()
+                .memoryCache(new UsingFreqLimitedMemoryCache(5 * 1024 * 1024)) // 2 Mb
+                .discCacheFileNameGenerator(new HashCodeFileNameGenerator())
+                .defaultDisplayImageOptions(options.build())
+                .build();
+
+        ImageLoader.getInstance().init(config);
     }
 }

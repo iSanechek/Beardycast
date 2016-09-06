@@ -51,10 +51,6 @@ public class Repository implements Cloneable {
 
         RealmResults<Article> results = realm.where(Article.class).findAll();
         results = results.sort("artDatePost", Sort.DESCENDING);
-        LogUtil.logD("Repository ", "SIZE -->> " + results.size());
-        for (Article article : results) {
-            Log.d(TAG, "getListArticle: " + article.getArtTitle());
-        }
         return results.asObservable();
     }
 
@@ -86,7 +82,6 @@ public class Repository implements Cloneable {
         realm.executeTransactionAsync(r -> {
             Article article = realm.where(Article.class).equalTo("artLink", id).findFirst();
             article.setPodcastId(idPodcast);
-            article.setPodName(namePodcast);
             r.copyToRealmOrUpdate(article);
         }, error -> {
             LogUtil.logE(TAG, "Error Update Episode Info -->> " + error.toString());
