@@ -88,7 +88,7 @@ public class BaseTag extends LinearLayout {
         CardView cardView = new CardView(getContext());
         cardView.setLayoutParams(params);
         cardView.setElevation(2f);
-        cardView.setBackgroundResource(ResUtils.getColor(getContext(), R.color.colorBackground));
+        cardView.setCardBackgroundColor(ResUtils.getColor(getContext(), R.color.colorBackground));
         LinearLayout.LayoutParams llParams = new LinearLayout.LayoutParams(
                 LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
         llParams.setMargins(1, 1, 1, 1);
