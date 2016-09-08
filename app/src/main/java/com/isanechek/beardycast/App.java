@@ -3,18 +3,9 @@ package com.isanechek.beardycast;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.os.Handler;
 import android.preference.PreferenceManager;
-
+import com.androidnetworking.AndroidNetworking;
 import com.isanechek.beardycast.data.network.OkHttp;
-
-import com.nostra13.universalimageloader.cache.disc.naming.HashCodeFileNameGenerator;
-import com.nostra13.universalimageloader.cache.memory.impl.UsingFreqLimitedMemoryCache;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import rx.plugins.RxJavaErrorHandler;
@@ -37,6 +28,11 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         OkHttp.init();
+
+        AndroidNetworking.initialize(getApplicationContext(), OkHttp.getOkHttpClient());
+        if (BuildConfig.DEBUG) {
+            AndroidNetworking.enableLogging("Networking");
+        }
 
         RxJavaPlugins.getInstance().registerErrorHandler(new RxJavaErrorHandler() {
             @Override

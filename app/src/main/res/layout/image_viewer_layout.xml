@@ -1,35 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.isanechek.beardycast.ui.widget.PullBackLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/pull_back"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-    <FrameLayout
+        xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/pull_back"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/topLevelLayout">
+        android:layout_height="match_parent">
 
-        <view
-            class="com.isanechek.beardycast.ui.widget.ShadowLayout"
+    <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/shadowLayout"
-            android:visibility="visible" >
+            android:id="@+id/topLevelLayout" >
 
-            <TextView
-                android:id="@+id/description"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/imageView" />
-
-            <ImageView
+        <ImageView
                 android:id="@+id/viewer_pic"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_centerInParent="true"
-                android:scaleType="centerInside" />
+                android:layout_height="match_parent"/>
 
-        </view>
-    </FrameLayout>
+        <TextView
+                android:id="@+id/description"
+                android:layout_alignParentBottom="true"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                android:padding="12dp"
+                tools:text="Test"/>
+
+
+    </RelativeLayout>
 </com.isanechek.beardycast.ui.widget.PullBackLayout>

@@ -1,59 +1,44 @@
 package com.isanechek.beardycast.ui.imageviewer;
 
-import android.animation.TimeInterpolator;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.ColorMatrix;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.ColorDrawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Html;
+import android.text.Spanned;
 import android.util.Log;
-import android.view.animation.AccelerateInterpolator;
-import android.view.animation.DecelerateInterpolator;
-import android.widget.FrameLayout;
+import android.view.View;
 import android.widget.ImageView;
-
+import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.isanechek.beardycast.R;
 import com.isanechek.beardycast.ui.widget.PullBackLayout;
-import com.isanechek.beardycast.ui.widget.ShadowLayout;
-import com.isanechek.beardycast.utils.BitmapUtils;
 
 /**
  * Created by isanechek on 26.05.16.
  */
 public class ImageViewer extends AppCompatActivity implements PullBackLayout.Callback {
     private static final int LAYOUT = R.layout.image_viewer_layout;
-    private static final TimeInterpolator sDecelerator = new DecelerateInterpolator();
-    private static final TimeInterpolator sAccelerator = new AccelerateInterpolator();
-    private static final String PACKAGE_NAME = "com.isanechek.beardycast.ui.imageviewer";
-    private static final int ANIM_DURATION = 500;
     private static final String TAG = "ImageViewer";
 
-    public static Intent startActivity(Context context, String url) {
+    public static Intent startActivity(Context context, String url, String description, String tagImg) {
         Intent intent = new Intent(context, ImageViewer.class);
         intent.putExtra("url", url);
+        intent.putExtra("description", description);
+        intent.putExtra("tagImg", tagImg);
         context.startActivity(intent);
         return intent;
     }
 
     private String url;
+    private String description;
+    private String tagImg;
 
     private PullBackLayout backLayout;
     private ImageView pic;
-    private BitmapDrawable mBitmapDrawable;
-    private FrameLayout mTopLevelLayout;
-    private ShadowLayout mShadowLayout;
-    private int mOriginalOrientation;
-    private ColorMatrix colorizerMatrix = new ColorMatrix();
-    ColorDrawable mBackground;
-    int mLeftDelta;
-    int mTopDelta;
-    float mWidthScale;
-    float mHeightScale;
+    private TextView descTextView;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -63,36 +48,26 @@ public class ImageViewer extends AppCompatActivity implements PullBackLayout.Cal
 
         backLayout = (PullBackLayout) findViewById(R.id.pull_back);
         backLayout.setCallback(this);
-        mTopLevelLayout = (FrameLayout) findViewById(R.id.topLevelLayout);
-        mShadowLayout = (ShadowLayout) findViewById(R.id.shadowLayout);
         pic = (ImageView) findViewById(R.id.viewer_pic);
-
-//
-//        Bundle bundle = getIntent().getExtras();
-//        Bitmap bitmap = BitmapUtils.getBitmap(getResources(),
-//                bundle.getInt(PACKAGE_NAME + ".resourceId"));
-//        String description = bundle.getString(PACKAGE_NAME + ".description");
-//        final int thumbnailTop = bundle.getInt(PACKAGE_NAME + ".top");
-//        final int thumbnailLeft = bundle.getInt(PACKAGE_NAME + ".left");
-//        final int thumbnailWidth = bundle.getInt(PACKAGE_NAME + ".width");
-//        final int thumbnailHeight = bundle.getInt(PACKAGE_NAME + ".height");
-//        mOriginalOrientation = bundle.getInt(PACKAGE_NAME + ".orientation");
-
-
+        descTextView = (TextView) findViewById(R.id.description);
 
         url = getIntent().getExtras().getString("url");
-        if (url == null) {
-            // show err
-            msg("URL -->> NULL");
-        } else {
-            msg("URL -->> " + url);
-            initUI(url);
+        description = getIntent().getExtras().getString("description");
+        if (description != null) {
+            new FormatTextTask().execute();
         }
-
+        tagImg = getIntent().getExtras().getString("tagImg");
+        initUI();
     }
 
-    private void initUI(String url) {
-        Glide.with(ImageViewer.this).load(url).asBitmap().into(pic);
+    private void initUI() {
+//        AndroidNetworking.get(url)
+//                .setTag("imageviewer")
+
+        Glide.with(ImageViewer.this)
+                .load(url)
+                .placeholder(R.drawable.holder1)
+                .into(pic);
     }
 
     private void msg(String text) {
@@ -117,5 +92,29 @@ public class ImageViewer extends AppCompatActivity implements PullBackLayout.Cal
     @Override
     public void onPullComplete(@PullBackLayout.Direction int direction) {
         finish();
+    }
+
+
+    private class FormatTextTask extends AsyncTask<Void, Void, Void> {
+        private Spanned spanned;
+
+        FormatTextTask() {
+        }
+
+        protected Void doInBackground(Void... urls) {
+            spanned = Html.fromHtml(description);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            if (descTextView != null){
+                descTextView.setText(spanned);
+                if(spanned.toString().isEmpty()){
+                    descTextView.setVisibility(View.GONE);
+                }
+            }
+        }
     }
 }

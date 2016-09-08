@@ -6,18 +6,22 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
-import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
-import android.widget.*;
+import android.widget.HorizontalScrollView;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.isanechek.beardycast.R;
 import com.isanechek.beardycast.data.model.article.Article;
 import com.isanechek.beardycast.ui.details.widgets.*;
+import com.isanechek.beardycast.ui.imageviewer.ImageViewer;
 import com.isanechek.beardycast.ui.mvp.MvpActivity;
 import com.isanechek.beardycast.utils.Util;
 
@@ -96,9 +100,10 @@ public class DetailsArticleActivity extends MvpActivity<DetailsArticlePresenter>
         logD(TAG, "initWidgets");
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDefaultDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDefaultDisplayHomeAsUpEnabled(false);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_details_24dp);
         toolbar.setNavigationOnClickListener(view -> {
             if (Util.isAndroid5Plus()) {
                 finishAfterTransition();
@@ -107,7 +112,7 @@ public class DetailsArticleActivity extends MvpActivity<DetailsArticlePresenter>
             }
         });
 
-        toolbar_progress = (View) findViewById(R.id.toolbar_progress);
+        toolbar_progress = findViewById(R.id.toolbar_progress);
         toolbar_title = (TextView) findViewById(R.id.toolbar_title);
         imageView = (ImageView) findViewById(R.id.back_drop);
         appBarLayout = (AppBarLayout) findViewById(R.id.app_bar);
@@ -138,8 +143,8 @@ public class DetailsArticleActivity extends MvpActivity<DetailsArticlePresenter>
         logD(TAG, "Article: " + article.getArtTitle());
 
         Glide.with(this)
-                .load(article.getArtImgLink())
-                .asBitmap().into(imageView);
+                .load(article.getArtImgLink()).asBitmap()
+                .diskCacheStrategy(DiskCacheStrategy.RESULT).into(imageView);
 
         title = article.getArtTitle();
         toolbar_title.setText(title);
@@ -200,11 +205,13 @@ public class DetailsArticleActivity extends MvpActivity<DetailsArticlePresenter>
                 startAlphaAnimation(toolbar_title, ALPHA_ANIMATIONS_DURATION, View.VISIBLE);
                 toolbar_title.setText(title);
                 mIsTheTitleVisible = true;
+                logE(TAG, "VISIBLE");
             }
         } else {
             if (mIsTheTitleVisible) {
-                startAlphaAnimation(toolbar_title, ALPHA_ANIMATIONS_DURATION, View.INVISIBLE);
+                startAlphaAnimation(toolbar_title, ALPHA_ANIMATIONS_DURATION, View.GONE);
                 mIsTheTitleVisible = false;
+                logE(TAG, "GONE");
             }
         }
     }
@@ -212,13 +219,15 @@ public class DetailsArticleActivity extends MvpActivity<DetailsArticlePresenter>
     private void handleAlphaOnTitle(float percentage) {
         if (percentage >= PERCENTAGE_TO_HIDE_TITLE_DETAILS) {
             if(mIsTheTitleContainerVisible) {
-                startAlphaAnimation(titleContainer, ALPHA_ANIMATIONS_DURATION, View.INVISIBLE);
+                startAlphaAnimation(titleContainer, ALPHA_ANIMATIONS_DURATION, View.GONE);
                 mIsTheTitleContainerVisible = false;
+                logE(TAG, "VISIBLE1");
             }
         } else {
             if (!mIsTheTitleContainerVisible) {
                 startAlphaAnimation(titleContainer, ALPHA_ANIMATIONS_DURATION, View.VISIBLE);
                 mIsTheTitleContainerVisible = true;
+                logE(TAG, "GONE1");
             }
         }
     }
@@ -234,21 +243,14 @@ public class DetailsArticleActivity extends MvpActivity<DetailsArticlePresenter>
     }
 
     private Pattern pattern = Pattern.compile("(<div class=\"article-entry\"[^>]*?>[\\s\\S]*?</div>)[^<]*?<footer");
-    float coef = 1;
 
     public void parse(String html) {
-        runOnUiThread(() -> getSupportActionBar().setTitle("loaded"));
-
         final Matcher matcher = pattern.matcher(html);
-        Log.d("kek", "check 3");
         if (matcher.find()) {
             final String finalHtml = matcher.group(1);
-
             runOnUiThread(() -> {
-                final long time = System.currentTimeMillis();
                 Document document = Document.parse(finalHtml);
                 container.addView(recurseUi(document.getRoot()));
-                getSupportActionBar().setTitle("ui " + Math.floor((System.currentTimeMillis() - time) * coef));
             });
 
         }
@@ -257,7 +259,7 @@ public class DetailsArticleActivity extends MvpActivity<DetailsArticlePresenter>
 
 
     private final static Pattern p2 = Pattern.compile("^(b|i|u|del|sub|sup|span|a|br)$");
-    private Matcher matcher;
+    private final static Pattern youtubeId = Pattern.compile("^https?://.*(?:youtu.be/|v/|u/\\w/|embed/|watch?v=)([^#&?]*).*$", Pattern.CASE_INSENSITIVE);
 
     private BaseTag recurseUi(final Element element) {
         BaseTag thisView = getViewByTag(element.tagName());
@@ -267,15 +269,53 @@ public class DetailsArticleActivity extends MvpActivity<DetailsArticlePresenter>
                 imageDescription = element.attr("alt");
             }
 
-            thisView.setImage("http://beardycast.com/".concat(element.attr("src")), imageDescription);
-            thisView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Toast.makeText(DetailsArticleActivity.this, element.attr("src"), Toast.LENGTH_SHORT).show();
+            String tagImg = null;
+            if (element.tagName().equals("img")) {
+               String url = "http://beardycast.com/".concat(element.attr("src"));
+                if (url.contains(".gif")) {
+                    tagImg = "gif";
                 }
-            });
+                thisView.setImage(url, imageDescription, tagImg);
+                String finalImageDescription = imageDescription;
+                String finalTagImg = tagImg;
+                thisView.setOnClickListener(v -> ImageViewer.startActivity(DetailsArticleActivity.this, element.attr("src"), finalImageDescription, finalTagImg));
+            }
 
             return thisView;
+        }
+
+        if (element.tagName().equals("iframe")) {
+            if (element.attr("src").contains("www.youtube.com")) {
+                Matcher matcher = youtubeId.matcher(element.attr("src"));
+                if (matcher.matches()) {
+                    thisView.setImage("http://img.youtube.com/vi/"+matcher.group(1)+"/maxresdefault.jpg", null, "youtube");
+                    thisView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+
+                        }
+                    });
+                }
+                return thisView;
+            }
+        }
+
+        if (element.tagName().equals("h4")) {
+            logE(TAG, "h4 tag: " + element.getText());
+            return null;
+        }
+
+        if (element.tagName().equals("blockquote")) {
+            thisView.setBackgroundColor(ContextCompat.getColor(this, R.color.colorBackground));
+        }
+
+        if (element.tagName().equals("figure")) {
+            String text = element.getLast().getText();
+            if (text != null) {
+                logE(TAG, "text: " + text);
+            } else {
+                logE(TAG, "text null");
+            }
         }
 
         String html = element.getText();
@@ -287,7 +327,7 @@ public class DetailsArticleActivity extends MvpActivity<DetailsArticlePresenter>
             BaseTag newView = null;
             if (!text && child.tagName().equals("br"))
                 continue;
-            matcher = p2.matcher(child.tagName());
+            Matcher matcher = p2.matcher(child.tagName());
             boolean res1 = true, res2 = true;
             for (Element temp : child.getElements()) {
                 if (temp.tagName().equals("a")) {

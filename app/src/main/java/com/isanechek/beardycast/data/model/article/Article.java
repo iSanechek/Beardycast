@@ -20,6 +20,7 @@ public class Article extends RealmObject {
     private String artDescription;
     private String artImgLink;
     private String podcastId;
+    private String podcastUrl;
     private boolean isPodcast;
     private boolean isNewArticle;
     private boolean isReadArticle;

@@ -8,10 +8,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.isanechek.beardycast.R;
 import com.isanechek.beardycast.data.model.article.Article;
 import com.isanechek.beardycast.utils.Util;
@@ -144,8 +144,9 @@ class ArticleListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             Glide.with(mContext)
                     .load(article.getArtImgLink())
                     .asBitmap()
-                    .thumbnail(0.1f)
+                    .diskCacheStrategy(DiskCacheStrategy.RESULT)
                     .placeholder(R.drawable.h1)
+                    .dontAnimate()
                     .into(pic);
             cardView.setOnClickListener(view -> {
                 mOnClickItemCallback.onArticleClicked(article.getArtLink());
