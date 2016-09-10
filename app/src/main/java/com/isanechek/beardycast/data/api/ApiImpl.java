@@ -39,4 +39,9 @@ public class ApiImpl implements Api {
     public Observable<String> getHtmlBody(String url) {
         return Observable.defer(() -> Observable.just(Parser.getDetailArticleContentBody(url)));
     }
+
+    @Override
+    public Observable<String> getPodcastUrl(String url) {
+        return Observable.defer(() -> Observable.just(Parser.getMp3DownloadLink(url)));
+    }
 }

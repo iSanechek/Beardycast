@@ -19,4 +19,6 @@ public interface Api {
     Observable<ArrayList<RssItemParser>> getListPodcast(String url);
     /*Details Article*/
     Observable<String> getHtmlBody(String url);
+    /*Podcast Url*/
+    Observable<String> getPodcastUrl(String url);
 }

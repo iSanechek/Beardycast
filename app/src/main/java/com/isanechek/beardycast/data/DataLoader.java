@@ -4,6 +4,7 @@ import com.annimon.stream.Stream;
 import com.isanechek.beardycast.data.api.ApiImpl;
 import com.isanechek.beardycast.data.model.article.Article;
 import com.isanechek.beardycast.data.parser.articles.model.list.ParserListModel;
+import com.isanechek.beardycast.data.model.podcast.Podcast;
 import com.isanechek.beardycast.utils.LogUtil;
 
 import java.util.ArrayList;
@@ -15,6 +16,7 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import rx.subjects.BehaviorSubject;
+import timber.log.Timber;
 
 /**
  * Created by isanechek on 03.07.16.
@@ -64,9 +66,15 @@ public class DataLoader {
 
     private void insertData(List<ParserListModel> parserListModels) {
         Stream.of(parserListModels).map(MappingData::fromNetworkToDbModel)
+                .filter(value -> {
+                    Podcast podcast = new Podcast();
+                    podcast.setPodcastId(value.getArtLink());
+                    realm.executeTransactionAsync(r -> r.copyToRealmOrUpdate(podcast), () -> Timber.d("Inserted: " + value.getArtTitle() + " podcast"), error -> Timber.e("Inserted Error: " + value.getArtTitle() + " podcast" + " " + error.toString()));
+                    return true;
+                })
                 .forEach(value -> {
-                    msg("Insert Article: " + value.getArtTitle());
-                    realm.executeTransaction(r -> r.copyToRealmOrUpdate(value));
+                    Timber.d("Insert Article: " + value.getArtTitle());
+                    realm.executeTransactionAsync(r -> r.copyToRealmOrUpdate(value), () -> Timber.d("Inserted: " + value.getArtTitle()), error -> Timber.e("Inserted Error: " + value.getArtTitle() + " " + error.toString()));
                 });
 
 

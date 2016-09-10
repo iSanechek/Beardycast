@@ -88,7 +88,7 @@ public class DetailsArticleActivity extends MvpActivity<DetailsArticlePresenter>
 
         appBarLayout.addOnOffsetChangedListener(this);
 
-        String id = getIntent().getStringExtra(ARTICLE_ID);
+        id = getIntent().getStringExtra(ARTICLE_ID);
         if (!TextUtils.isEmpty(id) || id != null) {
             presenter.loadData(id);
         } else {
@@ -152,8 +152,8 @@ public class DetailsArticleActivity extends MvpActivity<DetailsArticlePresenter>
         articleDate.setText(Util.getDate(article.getArtDatePost()));
 
 
-
         if (article.isPodcast()) {
+            presenter.getPodcastInfo(id);
             fab.setImageResource(article.isPodcast() ? R.drawable.ic_play_arrow_black_24dp : R.drawable.ic_file_download_white_24dp);
         } else {
             fab.setImageResource(R.drawable.ic_forum_white_24dp);
@@ -219,13 +219,13 @@ public class DetailsArticleActivity extends MvpActivity<DetailsArticlePresenter>
     private void handleAlphaOnTitle(float percentage) {
         if (percentage >= PERCENTAGE_TO_HIDE_TITLE_DETAILS) {
             if(mIsTheTitleContainerVisible) {
-                startAlphaAnimation(titleContainer, ALPHA_ANIMATIONS_DURATION, View.GONE);
+                startAlphaAnimation(titleContainer, ALPHA_ANIMATIONS_DURATION, View.VISIBLE);
                 mIsTheTitleContainerVisible = false;
                 logE(TAG, "VISIBLE1");
             }
         } else {
             if (!mIsTheTitleContainerVisible) {
-                startAlphaAnimation(titleContainer, ALPHA_ANIMATIONS_DURATION, View.VISIBLE);
+                startAlphaAnimation(titleContainer, ALPHA_ANIMATIONS_DURATION, View.GONE);
                 mIsTheTitleContainerVisible = true;
                 logE(TAG, "GONE1");
             }
@@ -259,7 +259,7 @@ public class DetailsArticleActivity extends MvpActivity<DetailsArticlePresenter>
 
 
     private final static Pattern p2 = Pattern.compile("^(b|i|u|del|sub|sup|span|a|br)$");
-    private final static Pattern youtubeId = Pattern.compile("^https?://.*(?:youtu.be/|v/|u/\\w/|embed/|watch?v=)([^#&?]*).*$", Pattern.CASE_INSENSITIVE);
+    private final static Pattern iFrameUrl = Pattern.compile("^https?://.*(?:youtu.be/|v/|u/\\w/|embed/|watch?v=)([^#&?]*).*$", Pattern.CASE_INSENSITIVE);
 
     private BaseTag recurseUi(final Element element) {
         BaseTag thisView = getViewByTag(element.tagName());
@@ -286,7 +286,7 @@ public class DetailsArticleActivity extends MvpActivity<DetailsArticlePresenter>
 
         if (element.tagName().equals("iframe")) {
             if (element.attr("src").contains("www.youtube.com")) {
-                Matcher matcher = youtubeId.matcher(element.attr("src"));
+                Matcher matcher = iFrameUrl.matcher(element.attr("src"));
                 if (matcher.matches()) {
                     thisView.setImage("http://img.youtube.com/vi/"+matcher.group(1)+"/maxresdefault.jpg", null, "youtube");
                     thisView.setOnClickListener(new View.OnClickListener() {
@@ -297,11 +297,17 @@ public class DetailsArticleActivity extends MvpActivity<DetailsArticlePresenter>
                     });
                 }
                 return thisView;
+            } else if (element.attr("src").contains("libsyn.com")) {
+                Matcher matcher = iFrameUrl.matcher(element.attr("src"));
+                if (matcher.matches()) {
+                    presenter.getPodcastUrl(id, matcher.group(1));
+                }
+                return null;
             }
         }
 
         if (element.tagName().equals("h4")) {
-            logE(TAG, "h4 tag: " + element.getText());
+            presenter.updatePodcastUrl(id, element.getElements().get(1).attr("href"));
             return null;
         }
 

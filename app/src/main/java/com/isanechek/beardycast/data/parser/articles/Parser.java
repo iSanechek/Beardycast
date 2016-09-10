@@ -1,6 +1,7 @@
 package com.isanechek.beardycast.data.parser.articles;
 
 import android.util.Log;
+import com.annimon.stream.Stream;
 import com.isanechek.beardycast.Constants;
 import com.isanechek.beardycast.data.network.OkHelper;
 import com.isanechek.beardycast.data.parser.articles.model.list.ParserListCategoryModel;
@@ -10,6 +11,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import timber.log.Timber;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -30,6 +32,8 @@ public class Parser {
         List<ParserListModel> cache = new ArrayList<>();
         List<ParserListTagModel> listTags;
         List<ParserListCategoryModel> listCategory;
+
+        msg("start");
 
         String body = OkHelper.getBody(url);
 
@@ -98,6 +102,7 @@ public class Parser {
                     listTags.add(new ParserListTagModel(tagName, tagUrl));
                 }
 
+
                 cache.add(new ParserListModel(title, description, resultDate, articleUrl, imageUrl, podcast, listTags, listCategory));
             }
             return cache;
@@ -113,6 +118,54 @@ public class Parser {
             return element.getElementsByClass("article-title").text();
         }
         return null;
+    }
+
+    private static void testMethodOne() {
+        msg("start test one");
+        String body = OkHelper.getBody("http://beardycast.com/categories/");
+
+        if (body != null) {
+            Document document = Jsoup.parse(body);
+            Elements elements = document.getElementsByClass("category-list-item");
+            if (elements.size() != 0) {
+                Stream.of(elements).forEach(Parser::getTryElement);
+            } else {
+                msg("elements size null");
+            }
+        }
+    }
+
+    private static void getTryElement(Element element) {
+        String tag = element.tagName();
+        switch (tag) {
+            case "li":
+                msg("name: " + element.children().first().text());
+                msg("name category: " + element.select("a").attr("href"));
+                msg("size: " + element.getAllElements().select("span").first().text());
+                break;
+            case "ul":
+                getTryElement(element);
+                break;
+            default:
+                break;
+
+        }
+    }
+
+
+    public static String getMp3DownloadLink(String url) {
+        Pattern pattern = Pattern.compile("//([\\s\\S]*\\.mp3)");
+        String link = null;
+        String body = OkHelper.getBody(url);
+        if (body != null) {
+            Matcher m = pattern.matcher(body);
+            if (m.find()) {
+                link = m.group();
+                link = link.replace("/force-cdn/highwinds/", "/");
+                Timber.d("Parse Mp3 Download Link: " + link);
+            }
+        }
+        return link;
     }
 
     public static String getDetailArticleContentBody(String url) {
@@ -132,6 +185,6 @@ public class Parser {
     }
 
     private static void msg(String text) {
-        Log.d("PARSER", text);
+        Log.e("PARSER", text);
     }
 }

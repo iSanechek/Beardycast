@@ -2,21 +2,17 @@ package com.isanechek.beardycast.data;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.UiThread;
-import android.util.Log;
-
 import com.isanechek.beardycast.data.model.article.Article;
-import com.isanechek.beardycast.data.model.podcast.Episode;
-import com.isanechek.beardycast.utils.LogUtil;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
+import com.isanechek.beardycast.data.model.podcast.Podcast;
 import io.realm.Realm;
 import io.realm.RealmResults;
 import io.realm.Sort;
 import rx.Observable;
 import rx.subjects.BehaviorSubject;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by isanechek on 03.07.16.
@@ -49,42 +45,79 @@ public class Repository implements Cloneable {
             lastNetworkRequest.put(url, System.currentTimeMillis());
         }
 
-        RealmResults<Article> results = realm.where(Article.class).findAll();
+        RealmResults<Article> results = realm.where(Article.class).findAllAsync();
         results = results.sort("artDatePost", Sort.DESCENDING);
         return results.asObservable();
     }
 
     @UiThread
     public Observable<Article> getArticle(@NonNull String id) {
-        return realm.where(Article.class).equalTo("artLink", id).findFirst().asObservable();
+        return realm.where(Article.class).equalTo("artLink", id).findFirstAsync().asObservable();
     }
 
     @UiThread
-    public Observable<Episode> getPodcast(@NonNull String id) {
-        return realm.where(Episode.class).equalTo("idUrlArticle", id).findFirst().asObservable();
+    public Observable<Podcast> getPodcast(String id) {
+        return realm.where(Podcast.class).equalTo("podcastId", id).findFirstAsync().asObservable();
     }
 
     @UiThread
-    public Observable<RealmResults<Episode>> getPodcastList(@NonNull String namePodcast, boolean forceReload) {
-        if (forceReload) {
-            /*Тут пока непонятно как лучше сделать*/
-        }
+    public void updatePodcastDownloadUrl(String objectId, String podcastDownloadUrl) {
+        Podcast podcast = realm.where(Podcast.class).equalTo("podcastId", objectId).findFirstAsync();
+        podcast.setPodcastUrl(podcastDownloadUrl);
 
-        RealmResults<Episode> results = realm.where(Episode.class).findAll();
-        results = results.sort("sortDate", Sort.DESCENDING);
-        return results.asObservable();
     }
 
+//    @UiThread
+//    public void updatePodcastListinedDone(String objectId) {
+//        realm.executeTransaction(r -> {
+//            Podcast podcast = realm.where(Podcast.class).equalTo("podcastId", objectId).findFirst();
+//            podcast.setPodcastListened(true);
+//            r.copyToRealmOrUpdate(podcast);
+//        });
+//    }
+//
+//    @UiThread
+//    public void updatePodcastElapsedTime(String objectId, long time) {
+//        realm.executeTransaction(r -> {
+//            Podcast podcast = realm.where(Podcast.class).equalTo("podcastId", objectId).findFirst();
+//            podcast.setPodcastElapsedTime(time);
+//            r.copyToRealmOrUpdate(podcast);
+//        });
+//    }
+//
+//    @UiThread
+//    public void updatePodcastTotalTime(String objectId, long time) {
+//        realm.executeTransaction(r -> {
+//            Podcast podcast = realm.where(Podcast.class).equalTo("podcastId", objectId).findFirst();
+//            podcast.setPodcastTotalTime(time);
+//            r.copyToRealmOrUpdate(podcast);
+//        });
+//    }
+//
+//    @UiThread
+//    public void updatePodcastDownloadState(String objectId) {
+//        realm.executeTransaction(r -> {
+//            Podcast podcast = realm.where(Podcast.class).equalTo("podcastId", objectId).findFirst();
+//            podcast.setPodcastDownloaded(true);
+//            r.copyToRealmOrUpdate(podcast);
+//        });
+//    }
+
     @UiThread
-    public void updatePodcastInfo(@NonNull String id,
-                                                 @NonNull String idPodcast,
-                                                 @NonNull String namePodcast) {
-        realm.executeTransactionAsync(r -> {
-            Article article = realm.where(Article.class).equalTo("artLink", id).findFirst();
-            article.setPodcastId(idPodcast);
+    public void updateArticleRead(String objectId) {
+        realm.executeTransaction(r -> {
+            Article article = realm.where(Article.class).equalTo("artLink", objectId).findFirst();
+            article.setReadArticle(true);
             r.copyToRealmOrUpdate(article);
-        }, error -> {
-            LogUtil.logE(TAG, "Error Update Episode Info -->> " + error.toString());
+        });
+    }
+
+    @UiThread
+    public void updateArticleNew(String objectId) {
+        realm.executeTransaction(r -> {
+            Article article = realm.where(Article.class).equalTo("artLink", objectId).findFirst();
+            article.setNewArticle(false);
+            r.copyToRealmOrUpdate(article);
         });
     }
 

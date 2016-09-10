@@ -259,7 +259,6 @@ public class ArticleListActivity extends MvpActivity<ArticleListPresenter> imple
                     return false;
                 })
                 .withSavedInstance(savedInstanceState)
-                .withShowDrawerOnFirstLaunch(true)
                 .build();
     }
 

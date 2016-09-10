@@ -2,8 +2,10 @@ package com.isanechek.beardycast.data;
 
 import android.support.annotation.NonNull;
 
+import android.util.Log;
 import com.isanechek.beardycast.Constants;
 import com.isanechek.beardycast.data.model.article.Article;
+import com.isanechek.beardycast.data.model.podcast.Podcast;
 import com.isanechek.beardycast.utils.LogUtil;
 
 import java.util.HashMap;
@@ -11,6 +13,7 @@ import java.util.Map;
 
 import io.realm.RealmResults;
 import rx.Observable;
+import rx.functions.Func1;
 
 import static com.isanechek.beardycast.utils.UrlUtil.getPageLoadedCount;
 import static com.isanechek.beardycast.utils.UrlUtil.savePageLoadedCount;
@@ -73,6 +76,15 @@ public class Model {
 
     public Observable<Article> getArticle(@NonNull String id) {
         return repository.getArticle(id).filter(article -> article.isValid());
+    }
+
+    public Observable<Podcast> getPodcast(String id) {
+        return repository.getPodcast(id).filter(podcast -> podcast.isValid());
+    }
+
+    public void addPodcastUrl(String id, String url) {
+        repository.updatePodcastDownloadUrl(id, url);
+        Log.e("addPodcastUrl", "add: " + id + " " + url);
     }
 
     /**
