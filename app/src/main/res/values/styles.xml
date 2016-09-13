@@ -25,4 +25,10 @@
 
     </style>
 
+    <style name="Btn" parent="Theme.AppCompat.Light" >
+        <item name="android:buttonStyle">@style/Widget.AppCompat.Button.Borderless.Colored</item>
+        <item name="colorControlHighlight">@color/primary_dark</item>
+        <item name="colorAccent">@color/primary</item>
+    </style>
+
 </resources>

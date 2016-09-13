@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+
+
+    <com.pierfrancescosoffritti.youtubeplayer.YouTubePlayerView
+            android:id="@+id/youtube_player_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+    <FrameLayout android:layout_width="match_parent"
+                 android:layout_height="wrap_content"
+                 android:id="@+id/player_button_container" android:minHeight="50dp">
+
+
+        <Button style="@style/Widget.AppCompat.Button.Borderless"
+                android:id="@+id/player_btn_copy"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/copy_btn_title"
+                android:textColor="@color/accent"
+                android:padding="8dp"
+                android:layout_gravity="right|center_vertical"/>
+        <Button style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/close_btn_title"
+                android:textColor="@color/accent"
+                android:padding="8dp"
+                android:id="@+id/player_btn_close"
+                android:layout_gravity="center"
+                android:layout_marginLeft="60dp"/>
+
+    </FrameLayout>
+
+</LinearLayout>

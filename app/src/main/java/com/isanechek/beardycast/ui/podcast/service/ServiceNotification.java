@@ -76,7 +76,7 @@ public class ServiceNotification {
         //mBigView.setTextViewText(R.id.service_notification_apptitle, "by " + $context.getText(R.string.app_name));
 
         Resources res = context.getResources();
-        mBuilder = new NotificationCompat.Builder(context).setSmallIcon(R.mipmap.icon)
+        mBuilder = new NotificationCompat.Builder(context).setSmallIcon(R.mipmap.ic_launcher)
                 .setTicker(res.getString(R.string.app_name))
                 .setContentTitle(res.getString(R.string.app_name))
                 .setCategory(Notification.CATEGORY_TRANSPORT)

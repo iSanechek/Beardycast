@@ -154,7 +154,8 @@ public class Parser {
 
 
     public static String getMp3DownloadLink(String url) {
-        Pattern pattern = Pattern.compile("//([\\s\\S]*\\.mp3)");
+        //  //([\s\S]*\.mp3)
+        Pattern pattern = Pattern.compile("((http?):((//)|(\\\\))+[\\w\\d:#@%/;$()~_?+-=\\\\.&]*\\.mp3)");
         String link = null;
         String body = OkHelper.getBody(url);
         if (body != null) {

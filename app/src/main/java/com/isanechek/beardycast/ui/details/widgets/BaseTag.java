@@ -94,8 +94,8 @@ public class BaseTag extends LinearLayout {
         params.setMargins(0, px2, 0, px2);
         CardView cardView = new CardView(getContext());
         cardView.setLayoutParams(params);
-        cardView.setElevation(6f);
-        cardView.setRadius(6f);
+//        cardView.setElevation(6f);
+//        cardView.setRadius(6f);
         LinearLayout.LayoutParams llParams = new LinearLayout.LayoutParams(
                 LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
         llParams.setMargins(px1, px1, 0, px1);

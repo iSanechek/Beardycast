@@ -1,10 +1,9 @@
 package com.isanechek.beardycast.data.network;
 
 import com.isanechek.beardycast.Constants;
+import okhttp3.OkHttpClient;
 
 import java.util.concurrent.TimeUnit;
-
-import okhttp3.OkHttpClient;
 
 /**
  * Created by isanechek on 11.04.16.
@@ -18,6 +17,7 @@ public class OkHttp {
                 .connectTimeout(Constants.TIMEOUT_OKHTTP, TimeUnit.MILLISECONDS)
                 .readTimeout(Constants.TIMEOUT_OKHTTP, TimeUnit.MILLISECONDS)
                 .build();
+        
     }
 
     public static OkHttpClient getOkHttpClient() {

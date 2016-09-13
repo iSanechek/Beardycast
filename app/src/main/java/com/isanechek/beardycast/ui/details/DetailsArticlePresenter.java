@@ -15,6 +15,7 @@ import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
 import static com.isanechek.beardycast.utils.LogUtil.logD;
+import static com.isanechek.beardycast.utils.LogUtil.logE;
 
 /**
  * Created by isanechek on 10.08.16.
@@ -78,7 +79,10 @@ public class DetailsArticlePresenter extends MvpPresenter<DetailsArticleView> {
         subscription2 = api.getPodcastUrl(url)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(s -> updatePodcastUrl(id, s));
+                .subscribe(s -> {
+//                    updatePodcastUrl(id, s);
+                    logE("TEST", "download url: " + s);
+                });
     }
 
     public void getPodcastInfo(String id) {

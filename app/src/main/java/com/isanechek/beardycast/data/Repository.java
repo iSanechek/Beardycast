@@ -62,9 +62,10 @@ public class Repository implements Cloneable {
 
     @UiThread
     public void updatePodcastDownloadUrl(String objectId, String podcastDownloadUrl) {
-        Podcast podcast = realm.where(Podcast.class).equalTo("podcastId", objectId).findFirstAsync();
+        Podcast podcast = realm.where(Podcast.class).equalTo("podcastId", objectId).findFirst();
+        realm.beginTransaction();
         podcast.setPodcastUrl(podcastDownloadUrl);
-
+        realm.commitTransaction();
     }
 
 //    @UiThread

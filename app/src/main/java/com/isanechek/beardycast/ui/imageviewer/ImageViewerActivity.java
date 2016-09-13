@@ -8,23 +8,25 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.text.Spanned;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import com.androidnetworking.AndroidNetworking;
 import com.bumptech.glide.Glide;
 import com.isanechek.beardycast.R;
+import com.isanechek.beardycast.data.parser.articles.Parser;
 import com.isanechek.beardycast.ui.widget.PullBackLayout;
+import timber.log.Timber;
 
 /**
  * Created by isanechek on 26.05.16.
  */
-public class ImageViewer extends AppCompatActivity implements PullBackLayout.Callback {
+public class ImageViewerActivity extends AppCompatActivity implements PullBackLayout.Callback {
     private static final int LAYOUT = R.layout.image_viewer_layout;
-    private static final String TAG = "ImageViewer";
+    private static final String TAG = "ImageViewerActivity";
 
     public static Intent startActivity(Context context, String url, String description, String tagImg) {
-        Intent intent = new Intent(context, ImageViewer.class);
+        Intent intent = new Intent(context, ImageViewerActivity.class);
         intent.putExtra("url", url);
         intent.putExtra("description", description);
         intent.putExtra("tagImg", tagImg);
@@ -44,34 +46,36 @@ public class ImageViewer extends AppCompatActivity implements PullBackLayout.Cal
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(LAYOUT);
-        msg("HELLO");
+        Timber.tag("Image Viewer");
 
         backLayout = (PullBackLayout) findViewById(R.id.pull_back);
         backLayout.setCallback(this);
         pic = (ImageView) findViewById(R.id.viewer_pic);
         descTextView = (TextView) findViewById(R.id.description);
 
-        url = getIntent().getExtras().getString("url");
+        url = Parser.tryUrl(getIntent().getExtras().getString("url"));
+        if (url != null) {
+            initUI(url);
+        } else {
+            Timber.e("Url Null");
+        }
         description = getIntent().getExtras().getString("description");
         if (description != null) {
             new FormatTextTask().execute();
         }
         tagImg = getIntent().getExtras().getString("tagImg");
-        initUI();
+
     }
 
-    private void initUI() {
+    private void initUI(String link) {
 //        AndroidNetworking.get(url)
 //                .setTag("imageviewer")
+//                .
 
-        Glide.with(ImageViewer.this)
-                .load(url)
+        Glide.with(ImageViewerActivity.this)
+                .load(link)
                 .placeholder(R.drawable.holder1)
                 .into(pic);
-    }
-
-    private void msg(String text) {
-        Log.d(TAG, text);
     }
 
     @Override

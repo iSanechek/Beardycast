@@ -5,9 +5,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import com.androidnetworking.AndroidNetworking;
-import com.androidnetworking.common.ConnectionQuality;
-import com.androidnetworking.interfaces.ConnectionQualityChangeListener;
 import com.isanechek.beardycast.data.network.OkHttp;
+import com.isanechek.beardycast.utils.CrashReportUtils;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import rx.plugins.RxJavaErrorHandler;
@@ -30,8 +29,14 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        OkHttp.init();
 
+        if (BuildConfig.DEBUG) {
+            Timber.plant(new Timber.DebugTree());
+        } else {
+            Timber.plant(new CrashReportUtils.CrashReportingTree());
+        }
+
+        OkHttp.init();
         AndroidNetworking.initialize(getApplicationContext(), OkHttp.getOkHttpClient());
         if (BuildConfig.DEBUG) {
             AndroidNetworking.enableLogging("Networking");

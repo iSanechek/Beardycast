@@ -21,9 +21,10 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.isanechek.beardycast.R;
 import com.isanechek.beardycast.data.model.article.Article;
 import com.isanechek.beardycast.ui.details.widgets.*;
-import com.isanechek.beardycast.ui.imageviewer.ImageViewer;
+import com.isanechek.beardycast.ui.imageviewer.ImageViewerActivity;
 import com.isanechek.beardycast.ui.mvp.MvpActivity;
 import com.isanechek.beardycast.utils.Util;
+import timber.log.Timber;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -82,7 +83,7 @@ public class DetailsArticleActivity extends MvpActivity<DetailsArticlePresenter>
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(LAYOUT);
-        logD(TAG, "onCreate");
+        Timber.tag(TAG);
 
         initWidgets();
 
@@ -259,7 +260,7 @@ public class DetailsArticleActivity extends MvpActivity<DetailsArticlePresenter>
 
 
     private final static Pattern p2 = Pattern.compile("^(b|i|u|del|sub|sup|span|a|br)$");
-    private final static Pattern iFrameUrl = Pattern.compile("^https?://.*(?:youtu.be/|v/|u/\\w/|embed/|watch?v=)([^#&?]*).*$", Pattern.CASE_INSENSITIVE);
+    private final static Pattern youtubeId = Pattern.compile("^https?://.*(?:youtu.be/|v/|u/\\w/|embed/|watch?v=)([^#&?]*).*$", Pattern.CASE_INSENSITIVE);
 
     private BaseTag recurseUi(final Element element) {
         BaseTag thisView = getViewByTag(element.tagName());
@@ -278,7 +279,7 @@ public class DetailsArticleActivity extends MvpActivity<DetailsArticlePresenter>
                 thisView.setImage(url, imageDescription, tagImg);
                 String finalImageDescription = imageDescription;
                 String finalTagImg = tagImg;
-                thisView.setOnClickListener(v -> ImageViewer.startActivity(DetailsArticleActivity.this, element.attr("src"), finalImageDescription, finalTagImg));
+                thisView.setOnClickListener(v -> ImageViewerActivity.startActivity(DetailsArticleActivity.this, element.attr("src"), finalImageDescription, finalTagImg));
             }
 
             return thisView;
@@ -286,22 +287,21 @@ public class DetailsArticleActivity extends MvpActivity<DetailsArticlePresenter>
 
         if (element.tagName().equals("iframe")) {
             if (element.attr("src").contains("www.youtube.com")) {
-                Matcher matcher = iFrameUrl.matcher(element.attr("src"));
+                String link = element.attr("src");
+                Matcher matcher = youtubeId.matcher(link);
                 if (matcher.matches()) {
-                    thisView.setImage("http://img.youtube.com/vi/"+matcher.group(1)+"/maxresdefault.jpg", null, "youtube");
-                    thisView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-
-                        }
+                    String id = matcher.group(1);
+                    thisView.setImage("http://img.youtube.com/vi/"+id+"/maxresdefault.jpg", null, "youtube");
+                    thisView.setOnClickListener(v -> {
+                        Timber.e("Click", link);
+                        YoutubePlayerDialog dialog = YoutubePlayerDialog.getInstance(id);
+                        dialog.show(getSupportFragmentManager(), "playerDialog");
                     });
                 }
                 return thisView;
             } else if (element.attr("src").contains("libsyn.com")) {
-                Matcher matcher = iFrameUrl.matcher(element.attr("src"));
-                if (matcher.matches()) {
-                    presenter.getPodcastUrl(id, matcher.group(1));
-                }
+                presenter.getPodcastUrl(id, "http:" + element.attr("src"));
+                logE(TAG, "podcast link: " + "http:" + element.attr("src"));
                 return null;
             }
         }
