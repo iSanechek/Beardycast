@@ -12,7 +12,8 @@
 
     <FrameLayout android:layout_width="match_parent"
                  android:layout_height="wrap_content"
-                 android:id="@+id/player_button_container" android:minHeight="50dp">
+                 android:id="@+id/player_button_container"
+                 android:minHeight="50dp">
 
 
         <Button style="@style/Widget.AppCompat.Button.Borderless"

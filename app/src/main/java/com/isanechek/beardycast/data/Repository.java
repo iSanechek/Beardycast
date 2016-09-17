@@ -3,7 +3,7 @@ package com.isanechek.beardycast.data;
 import android.support.annotation.NonNull;
 import android.support.annotation.UiThread;
 import com.isanechek.beardycast.data.model.article.Article;
-import com.isanechek.beardycast.data.model.podcast.Podcast;
+import com.isanechek.beardycast.data.model.article.Podcast;
 import io.realm.Realm;
 import io.realm.RealmResults;
 import io.realm.Sort;

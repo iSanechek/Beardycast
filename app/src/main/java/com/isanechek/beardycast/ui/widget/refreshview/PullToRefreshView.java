@@ -19,7 +19,7 @@ import android.widget.AbsListView;
 import android.widget.ImageView;
 
 import com.isanechek.beardycast.R;
-import com.isanechek.beardycast.utils.Util;
+import com.isanechek.beardycast.utils.Utils;
 
 import java.security.InvalidParameterException;
 
@@ -106,11 +106,11 @@ public class PullToRefreshView extends ViewGroup {
         switch (type) {
             case TYPE_ROCKET:
                 mBaseRefreshView = new RocketRefreshView(getContext(), this);
-                mTotalDragDistance = Util.convertDpToPixel(context, DRAG_MAX_DISTANCE);
+                mTotalDragDistance = Utils.convertDpToPixel(context, DRAG_MAX_DISTANCE);
                 break;
             case TYPE_SUN:
                 mBaseRefreshView = new SunRefreshView(getContext(), this);
-                mTotalDragDistance = Util.convertDpToPixel(context, DRAW_MAX_DISTANCE_SUN);
+                mTotalDragDistance = Utils.convertDpToPixel(context, DRAW_MAX_DISTANCE_SUN);
                 break;
             default:
                 throw new InvalidParameterException("Type is not exists");

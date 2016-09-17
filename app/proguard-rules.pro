@@ -23,3 +23,5 @@
 -keep class io.realm.** { *; }
 -dontwarn javax.**
 -dontwarn io.realm.**
+# For FastNetworking
+-dontwarn okio.**

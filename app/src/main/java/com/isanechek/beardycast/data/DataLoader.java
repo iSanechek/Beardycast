@@ -4,7 +4,7 @@ import com.annimon.stream.Stream;
 import com.isanechek.beardycast.data.api.ApiImpl;
 import com.isanechek.beardycast.data.model.article.Article;
 import com.isanechek.beardycast.data.parser.articles.model.list.ParserListModel;
-import com.isanechek.beardycast.data.model.podcast.Podcast;
+import com.isanechek.beardycast.data.model.article.Podcast;
 import com.isanechek.beardycast.utils.LogUtil;
 
 import java.util.ArrayList;
@@ -31,6 +31,8 @@ public class DataLoader {
 
     public DataLoader() {
         api = ApiImpl.getInstance();
+        Timber.tag("Data Loader");
+        Timber.d("Data Loader Create");
     }
 
     public void loadData(String url, Realm realm, BehaviorSubject<Boolean> networkLoading) {
@@ -51,7 +53,6 @@ public class DataLoader {
     private void processAndAddData(List<ParserListModel> parserListModels) {
         RealmResults<Article> results = realm.where(Article.class).findAll();
         if (results.size() == 0) {
-
             insertData(parserListModels);
         } else {
             List<ParserListModel> list = checkNewItem(parserListModels, results);
@@ -67,9 +68,12 @@ public class DataLoader {
     private void insertData(List<ParserListModel> parserListModels) {
         Stream.of(parserListModels).map(MappingData::fromNetworkToDbModel)
                 .filter(value -> {
-                    Podcast podcast = new Podcast();
-                    podcast.setPodcastId(value.getArtLink());
-                    realm.executeTransactionAsync(r -> r.copyToRealmOrUpdate(podcast), () -> Timber.d("Inserted: " + value.getArtTitle() + " podcast"), error -> Timber.e("Inserted Error: " + value.getArtTitle() + " podcast" + " " + error.toString()));
+                    realm.executeTransactionAsync(realm1 -> {
+                        Podcast podcast = new Podcast();
+                        podcast.setPodcastId(value.getArtLink());
+                        value.setPodcast(podcast);
+                        Timber.d("Podcast Object: " + podcast.getPodcastId());
+                    });
                     return true;
                 })
                 .forEach(value -> {

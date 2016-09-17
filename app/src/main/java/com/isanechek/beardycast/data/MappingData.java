@@ -1,13 +1,12 @@
 package com.isanechek.beardycast.data;
 
 import com.annimon.stream.Stream;
-import com.annimon.stream.function.Predicate;
+import com.isanechek.beardycast.Constants;
 import com.isanechek.beardycast.data.model.article.ArtCategory;
 import com.isanechek.beardycast.data.model.article.ArtTag;
 import com.isanechek.beardycast.data.model.article.Article;
-import com.isanechek.beardycast.data.parser.articles.model.list.ParserListCategoryModel;
 import com.isanechek.beardycast.data.parser.articles.model.list.ParserListModel;
-import com.isanechek.beardycast.utils.Util;
+import com.isanechek.beardycast.utils.Utils;
 
 import java.util.Date;
 
@@ -21,7 +20,6 @@ import timber.log.Timber;
 public class MappingData {
 
     public static Article fromNetworkToDbModel(ParserListModel model) {
-        final boolean podcast = false;
         Article article = new Article();
         article.setArtLink(model.getLink());
         article.setArtTitle(model.getTitle());
@@ -31,8 +29,8 @@ public class MappingData {
         article.setReadArticle(false);
         article.setSavedArticle(false);
         article.setArtDatePost(model.getDatePost());
-        Date date = Util.getTimeStamp();
-        article.setSortTimeStamp(date);
+        Date date = Utils.getTimeStamp(); // remove later
+        article.setSortTimeStamp(date);  // remove later
         article.setCategory(new RealmList<>());
         Stream.of(model.getCategory())
                 .filter(value -> {
@@ -43,6 +41,9 @@ public class MappingData {
                     return true;
                 })
                 .forEach(value -> {
+                    if (value.getCategoryName().matches("(?i)наука")) {
+                        article.setArtTag(Constants.ARTICLE_TAG_SCIENTIFIC);
+                    }
                     Timber.d("Category: " + value.getCategoryName());
                     ArtCategory category = new ArtCategory();
                     category.setCategoryName(value.getCategoryName());

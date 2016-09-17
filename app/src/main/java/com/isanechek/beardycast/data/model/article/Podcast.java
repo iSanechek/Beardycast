@@ -1,4 +1,4 @@
-package com.isanechek.beardycast.data.model.podcast;
+package com.isanechek.beardycast.data.model.article;
 
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
@@ -9,8 +9,10 @@ import io.realm.annotations.PrimaryKey;
 public class Podcast extends RealmObject {
 
     @PrimaryKey
-    private String podcastId;
+    private String podcastId; // тут ссылка на article
     private String podcastUrl;
+    private String podcastLocalUrl;
+    private String podcastTitle;
     private long podcastElapsedTime;
     private long podcastTotalTime;
     private boolean isPodcastListened;
@@ -30,6 +32,22 @@ public class Podcast extends RealmObject {
 
     public void setPodcastUrl(String podcastUrl) {
         this.podcastUrl = podcastUrl;
+    }
+
+    public String getPodcastLocalUrl() {
+        return podcastLocalUrl;
+    }
+
+    public void setPodcastLocalUrl(String podcastLocalUrl) {
+        this.podcastLocalUrl = podcastLocalUrl;
+    }
+
+    public String getPodcastTitle() {
+        return podcastTitle;
+    }
+
+    public void setPodcastTitle(String podcastTitle) {
+        this.podcastTitle = podcastTitle;
     }
 
     public long getPodcastElapsedTime() {

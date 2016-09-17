@@ -1,10 +1,8 @@
 package com.isanechek.beardycast.data.api;
 
 import com.isanechek.beardycast.data.parser.articles.model.list.ParserListModel;
-import com.isanechek.beardycast.data.parser.podcast.RssItemParser;
 import rx.Observable;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -15,8 +13,6 @@ public interface Api {
     Observable<List<ParserListModel>> getArticleList(String url);
     /*Last Date Update*/
     Observable<String> getDateLastPost();
-    /*Episode List Feed*/
-    Observable<ArrayList<RssItemParser>> getListPodcast(String url);
     /*Details Article*/
     Observable<String> getHtmlBody(String url);
     /*Podcast Url*/

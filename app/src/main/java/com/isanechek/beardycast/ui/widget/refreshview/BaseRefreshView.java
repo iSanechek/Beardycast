@@ -9,7 +9,7 @@ import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 
-import com.isanechek.beardycast.utils.Util;
+import com.isanechek.beardycast.utils.Utils;
 
 /**
  * @author lumeng on 2016-06-16.
@@ -36,7 +36,7 @@ public abstract class BaseRefreshView extends Drawable implements Drawable.Callb
     protected abstract void setupAnimations();
 
     protected int getPixel(int dp) {
-        return Util.convertDpToPixel(getContext(), dp);
+        return Utils.convertDpToPixel(getContext(), dp);
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)

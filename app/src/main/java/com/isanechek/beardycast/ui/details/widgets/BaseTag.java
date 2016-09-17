@@ -72,7 +72,8 @@ public class BaseTag extends LinearLayout {
         }
 
         protected Void doInBackground(Void... urls) {
-            spanned = Html.fromHtml(text);
+//            spanned = Html.fromHtml(text);
+            spanned = com.isanechek.beardycast.ui.details.widgets.Html.fromHtml(text);
             return null;
         }
 
@@ -92,8 +93,8 @@ public class BaseTag extends LinearLayout {
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                 LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
         params.setMargins(0, px2, 0, px2);
-        CardView cardView = new CardView(getContext());
-        cardView.setLayoutParams(params);
+//        CardView cardView = new CardView(getContext());
+//        cardView.setLayoutParams(params);
 //        cardView.setElevation(6f);
 //        cardView.setRadius(6f);
         LinearLayout.LayoutParams llParams = new LinearLayout.LayoutParams(
@@ -145,8 +146,8 @@ public class BaseTag extends LinearLayout {
             ll.addView(tv);
         }
 
-        cardView.addView(ll);
-        addView(cardView);
+//        cardView.addView(ll);
+        addView(ll);
     }
 
     public TextView getTextView() {

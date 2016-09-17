@@ -8,7 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
 import com.isanechek.beardycast.R;
-import com.isanechek.beardycast.utils.Util;
+import com.isanechek.beardycast.utils.Utils;
 
 /**
  * Created by isanechek on 17.07.16.
@@ -25,7 +25,7 @@ public class PreferencesActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.settings_toolbar);
         setSupportActionBar(toolbar);
         toolbar.setNavigationOnClickListener(view -> {
-            if (Util.isAndroid5Plus()) {
+            if (Utils.isAndroid5Plus()) {
                 finishAfterTransition();
             } else {
                 finish();

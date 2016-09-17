@@ -33,13 +33,13 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 import io.realm.RealmList;
 import io.realm.RealmResults;
+import timber.log.Timber;
 
 /**
  * Created by isanechek on 04.09.16.
  */
 public class ArticleListActivity extends MvpActivity<ArticleListPresenter> implements ArticleListView,
         ArticleListAdapter.OnArticleClickListener, ArticleListAdapter.OnLoadMoreCallback {
-    private static final String TAG = "Article List Activity";
     private static final int LAYOUT = R.layout.main_activity;
     private static final int PROFILE_SETTING = 100000;
     private static final String STATE_POSITION_INDEX = "state_position_index";
@@ -59,7 +59,10 @@ public class ArticleListActivity extends MvpActivity<ArticleListPresenter> imple
         super.onCreate(savedInstanceState);
         setContentView(LAYOUT);
         initView(savedInstanceState);
-        bindDrawer(savedInstanceState);
+//        bindDrawer(savedInstanceState);
+
+        Timber.tag("Article List Activity");
+        Timber.d("onCreate");
     }
 
     @Override
@@ -75,8 +78,8 @@ public class ArticleListActivity extends MvpActivity<ArticleListPresenter> imple
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        outState = result.saveInstanceState(outState);
-        outState = headerResult.saveInstanceState(outState);
+//        outState = result.saveInstanceState(outState);
+//        outState = headerResult.saveInstanceState(outState);
         super.onSaveInstanceState(outState);
         if (recyclerView != null) {
             int index = layoutManager.findFirstVisibleItemPosition();
@@ -89,11 +92,13 @@ public class ArticleListActivity extends MvpActivity<ArticleListPresenter> imple
 
     @Override
     public void onBackPressed() {
-        if (result != null && result.isDrawerOpen()) {
-            result.closeDrawer();
-        } else {
-            super.onBackPressed();
-        }
+//        if (result != null && result.isDrawerOpen()) {
+//            result.closeDrawer();
+//        } else {
+//            super.onBackPressed();
+//        }
+
+        super.onBackPressed();
     }
 
 
@@ -131,7 +136,6 @@ public class ArticleListActivity extends MvpActivity<ArticleListPresenter> imple
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
         switch (item.getItemId()) {
             case R.id.list_search:
 

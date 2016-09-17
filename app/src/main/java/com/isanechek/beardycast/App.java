@@ -62,6 +62,10 @@ public class App extends Application {
         return instance;
     }
 
+    public static App getInstance() {
+        return instance;
+    }
+
     public static SharedPreferences getPreferences(){
         if(preferences ==null)
             preferences = PreferenceManager.getDefaultSharedPreferences(instance.getApplicationContext());

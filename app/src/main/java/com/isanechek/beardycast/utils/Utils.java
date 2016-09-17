@@ -1,5 +1,7 @@
 package com.isanechek.beardycast.utils;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.os.Build;
 import android.text.Html;
@@ -20,7 +22,7 @@ import static com.isanechek.beardycast.utils.LogUtil.logE;
 /**
  * Created by isanechek on 11.05.16.
  */
-public class Util {
+public class Utils {
 
     /*Get Date For Sort*/
     public static Date getTimeStamp() {
@@ -63,6 +65,12 @@ public class Util {
     public static int convertDpToPixel(Context context, int dp) {
         float density = context.getResources().getDisplayMetrics().density;
         return Math.round((float) dp * density);
+    }
+
+    public static void toCopyPastManager(Context context, String text) {
+        ClipboardManager manager = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipData clipData = ClipData.newPlainText("copyText", text);
+        manager.setPrimaryClip(clipData);
     }
 
     public static String getPodName(String name) {

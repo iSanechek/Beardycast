@@ -6,24 +6,16 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.PowerManager;
 import android.util.Log;
-
-import com.isanechek.beardycast.data.model.podcast.Episode;
+import com.isanechek.beardycast.data.model.article.Podcast;
 import com.isanechek.beardycast.utils.NetworkUtils;
+import io.realm.RealmList;
 
 import java.io.IOException;
-import java.util.List;
-
-import io.realm.RealmList;
 
 /**
  * Created by isanechek on 27.07.16.
  */
 
-/*
-* A class used for playing Episode objects through streaming or from a file.
-* The MediaPlayer also has playlist functionality.
-* Use the interface {@link com.isanechek.beardycast.ui.podcast.service.Player.StateChangedListener} to be notified of important events in the MediaPlayer life cycle.
-*/
 public class Player implements android.media.MediaPlayer.OnPreparedListener,
         android.media.MediaPlayer.OnErrorListener,
         android.media.MediaPlayer.OnCompletionListener {
@@ -32,13 +24,13 @@ public class Player implements android.media.MediaPlayer.OnPreparedListener,
 
     private Context mContext;
     private MediaPlayer mPlayer;
-    private RealmList<Episode> mPlayList;
+    private RealmList<Podcast> mPlayList;
     private boolean mStreaming = false;
     private boolean mLoading = false;
     private boolean mCurrentTrackLoaded = false;
     private StateChangedListener mStateChangedListener;
 
-    public Player(Context context, RealmList<Episode> episodes) {
+    public Player(Context context, RealmList<Podcast> episodes) {
         this.mContext = context;
         mPlayer = new MediaPlayer();
         //set player properties
@@ -86,21 +78,21 @@ public class Player implements android.media.MediaPlayer.OnPreparedListener,
         mLoading = false;
         mCurrentTrackLoaded = true;
 //        notifyEpisodeChanged();
-        if (getCurrentEpisode().getPodElapsedTime() < getCurrentEpisode().getPodTotalTime())
-            seek(getCurrentEpisode().getPodElapsedTime());	//If we haven't listened to the complete Episode, seek to the elapsed time stored in the db.
+        if (getCurrentEpisode().getPodcastElapsedTime() < getCurrentEpisode().getPodcastTotalTime())
+            seek((int) getCurrentEpisode().getPodcastElapsedTime());	//If we haven't listened to the complete Episode, seek to the elapsed time stored in the db.
         else
             seek(0);	//If we have listened to the entire Episode, the player should start over.
         play();
     }
 
-    public Episode getCurrentEpisode() {
+    public Podcast getCurrentEpisode() {
         if (mPlayList.size() > 0)
             return mPlayList.get(0);
         else
             return null;
     }
 
-    public RealmList<Episode> getPlayList() {
+    public RealmList<Podcast> getPlayList() {
         return mPlayList;
     }
 
@@ -198,19 +190,19 @@ public class Player implements android.media.MediaPlayer.OnPreparedListener,
      * @return True if the track was successfully loaded. False if it failed.
      */
     private boolean loadCurrentTrack() {
-        Episode ep = mPlayList.get(0);
-        Log.i(TAG,"Loading " + ep.getmEpisodeTitle());
-        if (!ep.isEpisodeDownloaded() && !isOnline())
+        Podcast ep = mPlayList.get(0);
+        Log.i(TAG,"Loading " + ep.getPodcastTitle());
+        if (!ep.isPodcastDownloaded() && !isOnline())
             return false;
 
         try {
-            if (ep.isEpisodeDownloaded()) {
+            if (ep.isPodcastDownloaded()) {
                 mStreaming = false;
-                mPlayer.setDataSource(mContext, Uri.parse(ep.getLocalMp3Path()));
+                mPlayer.setDataSource(mContext, Uri.parse(ep.getPodcastLocalUrl()));
             }
             else {
                 mStreaming = true;
-                mPlayer.setDataSource(mContext, Uri.parse(ep.getPodMp3Url()));
+                mPlayer.setDataSource(mContext, Uri.parse(ep.getPodcastUrl()));
             }
         }
         catch (IOException e) {
@@ -241,7 +233,7 @@ public class Player implements android.media.MediaPlayer.OnPreparedListener,
         }
     }
 
-    public boolean playEpisode(Episode ep) {
+    public boolean playEpisode(Podcast ep) {
         int index = getEpisodeIndex(ep);
         if (index > 0) {
             mPlayList.remove(index);
@@ -263,7 +255,7 @@ public class Player implements android.media.MediaPlayer.OnPreparedListener,
         return loadCurrentTrack();
     }
 
-    private int getEpisodeIndex(Episode ep) {
+    private int getEpisodeIndex(Podcast ep) {
         for (int i=0; i<mPlayList.size(); i++) {
             if (mPlayList.get(i).equals(ep))
                 return i;
@@ -306,7 +298,7 @@ public class Player implements android.media.MediaPlayer.OnPreparedListener,
      * Update the MediaPlayer internal playlist.
      * @param updatedPlaylist New playlist.
      */
-    public void updatePlaylist(RealmList<Episode> updatedPlaylist) {
+    public void updatePlaylist(RealmList<Podcast> updatedPlaylist) {
         mPlayList = updatedPlaylist;
     }
 

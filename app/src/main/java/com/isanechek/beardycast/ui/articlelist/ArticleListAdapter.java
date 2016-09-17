@@ -8,13 +8,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.isanechek.beardycast.R;
 import com.isanechek.beardycast.data.model.article.Article;
-import com.isanechek.beardycast.utils.Util;
+import com.isanechek.beardycast.utils.Utils;
 import io.realm.RealmList;
 
 /**
@@ -22,7 +23,6 @@ import io.realm.RealmList;
  */
 
 class ArticleListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    private static final String TAG = ArticleListAdapter.class.getSimpleName();
 
     private static final int VIEW_ITEM = 0;
     private static final int VIEW_LOADING = 1;
@@ -123,7 +123,7 @@ class ArticleListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         TextView description;
         TextView title;
         TextView date;
-        CardView cardView;
+        LinearLayout cardView;
         ImageView pic;
 
         public ItemViewHolder(View v) {
@@ -131,14 +131,14 @@ class ArticleListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             description = (TextView) v.findViewById(R.id.list_description);
             title = (TextView) v.findViewById(R.id.list_art_title);
             date = (TextView) v.findViewById(R.id.list_art_date);
-            cardView = (CardView) v.findViewById(R.id.cardView);
+            cardView = (LinearLayout ) v.findViewById(R.id.cardView);
             pic = (ImageView) v.findViewById(R.id.list_art_img);
         }
 
         public void setArticle(Article article) {
             title.setText(article.getArtTitle());
             description.setText(article.getArtDescription());
-            String d1 = Util.getDate(article.getArtDatePost());
+            String d1 = Utils.getDate(article.getArtDatePost());
             date.setText(d1);
 
             Glide.with(mContext)

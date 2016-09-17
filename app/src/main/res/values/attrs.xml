@@ -59,4 +59,7 @@
             <enum name="sun" value="1"/>
         </attr>
     </declare-styleable>
+    <declare-styleable name="TextViewLabel">
+        <attr name="labelColor" format="color|reference"/>
+    </declare-styleable>
 </resources>

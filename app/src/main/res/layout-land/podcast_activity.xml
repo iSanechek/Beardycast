@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:tools="http://schemas.android.com/tools"
+              android:orientation="horizontal"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent" android:baselineAligned="false">
+
+    <LinearLayout android:layout_width="match_parent"
+                  android:layout_height="match_parent"
+                  android:layout_weight="1"
+                  android:orientation="vertical">
+
+        <FrameLayout android:layout_width="match_parent"
+                     android:layout_height="match_parent">
+
+            <android.support.v7.widget.AppCompatImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="8dp"
+                    app:srcCompat="@drawable/ic_clear_black_24dp"
+                    android:id="@+id/pa_close_btn"
+                    android:background="@null"/>
+
+            <ImageView android:layout_width="230dp"
+                       android:layout_height="230dp"
+                       android:src="@drawable/h1"
+                       android:scaleType="fitXY"
+                       android:id="@+id/pa_cover_image"
+                       android:layout_gravity="center_vertical"
+                       android:layout_marginLeft="25dp"/>
+
+        </FrameLayout>
+
+    </LinearLayout>
+
+    <LinearLayout android:layout_width="match_parent"
+                  android:layout_height="match_parent"
+                  android:layout_weight="1"
+                  android:orientation="vertical" android:layout_marginTop="8dp">
+        <LinearLayout android:layout_width="match_parent"
+                      android:layout_height="wrap_content"
+                      android:minHeight="50dp"
+                      android:orientation="horizontal" android:layout_marginLeft="8dp"
+                      android:layout_marginRight="8dp" android:background="@color/colorPrimaryDark"
+                      android:layout_marginTop="8dp">
+
+            <pttextview.widget.PTTextView android:layout_width="wrap_content"
+                                          android:layout_height="wrap_content"
+                                          android:textSize="16sp"
+                                          tools:text="На большом воздушном шаре мы с тобой труба шатали. Mы с тобой труба шатали"
+                                          android:ellipsize="end"
+                                          android:maxLines="3"
+                                          android:layout_gravity="left|center_vertical"
+                                          android:padding="10dp"
+                                          android:id="@+id/pa_title"/>
+
+        </LinearLayout>
+
+        <FrameLayout android:layout_width="match_parent"
+                     android:layout_height="wrap_content"
+                     android:layout_marginTop="8dp">
+            <pttextview.widget.PTTextView android:layout_width="wrap_content"
+                                          android:layout_height="wrap_content"
+                                          android:textSize="14sp"
+                                          android:text="00:00"
+                                          android:layout_gravity="left|center_vertical"
+                                          android:padding="8dp"
+                                          android:id="@+id/pa_elapsed_time"/>
+
+            <pttextview.widget.PTTextView android:layout_width="wrap_content"
+                                          android:layout_height="wrap_content"
+                                          android:textSize="14sp"
+                                          android:text="00:00"
+                                          android:padding="8dp"
+                                          android:layout_gravity="right|center_vertical"
+                                          android:id="@+id/pa_total_time"/>
+        </FrameLayout>
+
+        <FrameLayout android:layout_width="match_parent"
+                     android:layout_height="wrap_content"
+                     android:minHeight="100dp"
+                     android:layout_marginLeft="8dp"
+                     android:layout_marginRight="8dp"
+                     android:background="@color/primary_dark"
+                     android:layout_marginTop="8dp">
+
+            <android.support.v7.widget.AppCompatImageButton
+                    style="@style/Widget.AppCompat.Button.Borderless"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="8dp"
+                    app:srcCompat="@drawable/ic_replay_10_black_24dp"
+                    android:layout_gravity="left|center_vertical"
+                    android:layout_marginLeft="20dp"
+                    android:id="@+id/pa_replay_btn"/>
+
+            <android.support.v7.widget.AppCompatImageButton
+                    style="@style/Widget.AppCompat.Button.Borderless"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="8dp"
+                    app:srcCompat="@drawable/ic_pause_black_24dp"
+                    android:layout_gravity="center"
+                    android:id="@+id/pa_play_pause_btn"/>
+
+            <android.support.v7.widget.AppCompatImageButton
+                    style="@style/Widget.AppCompat.Button.Borderless"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="8dp"
+                    app:srcCompat="@drawable/ic_forward_10_black_24dp"
+                    android:layout_gravity="right|center_vertical"
+                    android:layout_marginRight="20dp"
+                    android:id="@+id/pa_btn_forward"/>
+        </FrameLayout>
+
+
+
+
+        <android.support.v7.widget.AppCompatSeekBar android:layout_width="match_parent"
+                                                    android:layout_height="wrap_content"
+                                                    android:layout_marginTop="8dp"
+                                                    android:padding="8dp"
+                                                    android:background="@color/colorPrimaryDark"
+                                                    android:id="@+id/pa_seek_bar" android:layout_marginRight="8dp"
+                                                    android:layout_marginLeft="8dp"/>
+
+    </LinearLayout>
+
+</LinearLayout>

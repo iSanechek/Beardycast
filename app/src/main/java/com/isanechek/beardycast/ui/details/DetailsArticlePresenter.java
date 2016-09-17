@@ -4,7 +4,7 @@ import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import com.isanechek.beardycast.data.Model;
 import com.isanechek.beardycast.data.api.ApiImpl;
-import com.isanechek.beardycast.data.model.podcast.Podcast;
+import com.isanechek.beardycast.data.model.article.Podcast;
 import com.isanechek.beardycast.data.network.OkHelper;
 import com.isanechek.beardycast.ui.mvp.MvpPresenter;
 import com.isanechek.beardycast.utils.RxUtil;
@@ -92,7 +92,7 @@ public class DetailsArticlePresenter extends MvpPresenter<DetailsArticleView> {
                 .subscribe(new Action1<Podcast>() {
                     @Override
                     public void call(Podcast podcast) {
-                        Timber.d("Podcast Url: " + podcast.getPodcastUrl());
+                        Timber.d("Podcast Url: " + podcast.getPodcastId());
                     }
                 }, new Action1<Throwable>() {
                     @Override

@@ -25,7 +25,7 @@ public class UrlUtil {
     public static void savePageLoadedCount(String id) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(App.getContext());
         int count = preferences.getInt(id, 1);
-        Log.d("URL Util", "count " + count);
+        Log.d("URL Utils", "count " + count);
         count++;
         preferences.edit().putInt(id, count).apply();
     }

@@ -1,6 +1,7 @@
 package com.isanechek.beardycast.ui.details;
 
 import android.app.Dialog;
+import android.content.ClipboardManager;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.design.widget.BottomSheetBehavior;
@@ -11,6 +12,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 import com.isanechek.beardycast.R;
+import com.isanechek.beardycast.utils.Utils;
 import com.pierfrancescosoffritti.youtubeplayer.AbstractYouTubeListener;
 import com.pierfrancescosoffritti.youtubeplayer.YouTubePlayerFullScreenListener;
 import com.pierfrancescosoffritti.youtubeplayer.YouTubePlayerView;
@@ -76,7 +78,7 @@ public class YoutubePlayerDialog extends BottomSheetDialogFragment {
             Button copy_btn = (Button) view.findViewById(R.id.player_btn_copy);
             copy_btn.setOnClickListener(v -> {
                 Toast.makeText(getActivity(), R.string.copy_past_toast, Toast.LENGTH_SHORT).show();
-                copyPastYoutubeUrl("youtube.com/" + url);
+                Utils.toCopyPastManager(getActivity(), "youtube.com/" + url);
             });
         } else {
             Timber.e("URL NULL");
@@ -97,9 +99,5 @@ public class YoutubePlayerDialog extends BottomSheetDialogFragment {
     public void onDestroyView() {
         super.onDestroyView();
         youTubePlayerView.release();
-    }
-
-    private void copyPastYoutubeUrl(String url) {
-
     }
 }

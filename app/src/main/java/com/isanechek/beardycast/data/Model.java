@@ -5,7 +5,7 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 import com.isanechek.beardycast.Constants;
 import com.isanechek.beardycast.data.model.article.Article;
-import com.isanechek.beardycast.data.model.podcast.Podcast;
+import com.isanechek.beardycast.data.model.article.Podcast;
 import com.isanechek.beardycast.utils.LogUtil;
 
 import java.util.HashMap;
@@ -13,7 +13,6 @@ import java.util.Map;
 
 import io.realm.RealmResults;
 import rx.Observable;
-import rx.functions.Func1;
 
 import static com.isanechek.beardycast.utils.UrlUtil.getPageLoadedCount;
 import static com.isanechek.beardycast.utils.UrlUtil.savePageLoadedCount;
@@ -85,6 +84,15 @@ public class Model {
     public void addPodcastUrl(String id, String url) {
         repository.updatePodcastDownloadUrl(id, url);
         Log.e("addPodcastUrl", "add: " + id + " " + url);
+    }
+
+    /*Podcast zone*/
+    public void markEpisodeAsListened(String podcastId) {
+
+    }
+
+    public void updatePodcastElapsedTime(long time) {
+
     }
 
     /**

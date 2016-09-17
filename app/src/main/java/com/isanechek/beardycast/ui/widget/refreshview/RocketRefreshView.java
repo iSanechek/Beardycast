@@ -9,7 +9,7 @@ import android.view.animation.Animation;
 import android.view.animation.Transformation;
 
 import com.isanechek.beardycast.R;
-import com.isanechek.beardycast.utils.Util;
+import com.isanechek.beardycast.utils.Utils;
 
 /**
  * @author lumeng on 2016-06-16.
@@ -89,15 +89,15 @@ public class RocketRefreshView extends BaseRefreshView {
 
         mSkyHeight = (int) (SKY_RATIO * mScreenWidth);
         mSkyTopOffset = mSkyHeight * 0.38f;
-        mSkyMoveOffset = Util.convertDpToPixel(getContext(), 15);
+        mSkyMoveOffset = Utils.convertDpToPixel(getContext(), 15);
 
         mRocketTopOffset = mParent.getTotalDragDistance() * 0.1f;
-        mRocketMoveOffset = Util.convertDpToPixel(mContext, 20);
+        mRocketMoveOffset = Utils.convertDpToPixel(mContext, 20);
 
         mTop = -mParent.getTotalDragDistance();
 
         mFireTopOffset = mParent.getTotalDragDistance() * 0.6f;
-        mFireMoveOffset = Util.convertDpToPixel(mContext, 20);
+        mFireMoveOffset = Utils.convertDpToPixel(mContext, 20);
 
         mFire1LeftOffset = (mScreenWidth / 100) * 47.5f;
         mFire2LeftOffset = (mScreenWidth / 100) * 51f;
@@ -190,8 +190,8 @@ public class RocketRefreshView extends BaseRefreshView {
                 + mFireMoveOffset
                 - mTop;
 
-        drawSmallFire(canvas, mFire1, mFire1LeftOffset, offsetY, mFireScale, mFire2LeftOffset - Util.convertDpToPixel(mContext, 15), mFireTopOffset + 50);
-        drawSmallFire(canvas, mFire2, mFire2LeftOffset, offsetY, mFireBurn, mFire2LeftOffset - Util.convertDpToPixel(mContext, 11), mFireTopOffset);
+        drawSmallFire(canvas, mFire1, mFire1LeftOffset, offsetY, mFireScale, mFire2LeftOffset - Utils.convertDpToPixel(mContext, 15), mFireTopOffset + 50);
+        drawSmallFire(canvas, mFire2, mFire2LeftOffset, offsetY, mFireBurn, mFire2LeftOffset - Utils.convertDpToPixel(mContext, 11), mFireTopOffset);
         drawSmallFire(canvas, mFire3, mFire3LeftOffset, offsetY, mFireScale, mFire3LeftOffset, mFireTopOffset + 50);
     }
 

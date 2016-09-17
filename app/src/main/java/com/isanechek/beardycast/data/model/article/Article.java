@@ -18,6 +18,7 @@ public class Article extends RealmObject {
     private String artTitle;
     private String artDescription;
     private String artImgLink;
+    private String artTag;
     private boolean isNewArticle;
     private boolean isReadArticle;
     private boolean isSavedArticle;
@@ -26,6 +27,7 @@ public class Article extends RealmObject {
     private Date sortTimeStamp;
     private RealmList<ArtTag> tags;
     private RealmList<ArtCategory> category;
+    private Podcast podcast;
 
     public String getArtLink() {
         return artLink;
@@ -57,6 +59,14 @@ public class Article extends RealmObject {
 
     public void setArtImgLink(String artImgLink) {
         this.artImgLink = artImgLink;
+    }
+
+    public String getArtTag() {
+        return artTag;
+    }
+
+    public void setArtTag(String artTag) {
+        this.artTag = artTag;
     }
 
     public boolean isNewArticle() {
@@ -123,4 +133,11 @@ public class Article extends RealmObject {
         this.category = category;
     }
 
+    public Podcast getPodcast() {
+        return podcast;
+    }
+
+    public void setPodcast(Podcast podcast) {
+        this.podcast = podcast;
+    }
 }
