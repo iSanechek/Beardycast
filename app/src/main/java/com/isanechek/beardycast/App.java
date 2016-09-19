@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import com.androidnetworking.AndroidNetworking;
 import com.isanechek.beardycast.data.network.OkHttp;
+import com.isanechek.beardycast.rxbus.RxBus;
 import com.isanechek.beardycast.utils.CrashReportUtils;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
@@ -26,9 +27,13 @@ public class App extends Application {
         instance = this;
     }
 
+    private RxBus rxBus;
+
     @Override
     public void onCreate() {
         super.onCreate();
+
+        rxBus = new RxBus();
 
         if (BuildConfig.DEBUG) {
             Timber.plant(new Timber.DebugTree());
@@ -72,5 +77,8 @@ public class App extends Application {
         return preferences;
     }
 
+    public RxBus bus() {
+        return rxBus;
+    }
 
 }

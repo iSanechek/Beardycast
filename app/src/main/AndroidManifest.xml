@@ -21,7 +21,6 @@
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -30,7 +29,15 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".ui.details.DetailsArticleActivity"
-            android:theme="@style/AppTheme.Details" />
+            android:theme="@style/AppTheme.Details" >
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="http" android:host="beardycast.com" />
+                <data android:scheme="https" android:host="beardycast.com" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".ui.splash.SplashActivity"
             android:theme="@style/AppTheme.NoActionBar" />

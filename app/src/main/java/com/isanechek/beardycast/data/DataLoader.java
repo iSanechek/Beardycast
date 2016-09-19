@@ -1,10 +1,12 @@
 package com.isanechek.beardycast.data;
 
 import com.annimon.stream.Stream;
+import com.isanechek.beardycast.App;
 import com.isanechek.beardycast.data.api.ApiImpl;
 import com.isanechek.beardycast.data.model.article.Article;
 import com.isanechek.beardycast.data.parser.articles.model.list.ParserListModel;
 import com.isanechek.beardycast.data.model.article.Podcast;
+import com.isanechek.beardycast.rxbus.SizeNewArticleEvent;
 import com.isanechek.beardycast.utils.LogUtil;
 
 import java.util.ArrayList;
@@ -56,6 +58,7 @@ public class DataLoader {
             insertData(parserListModels);
         } else {
             List<ParserListModel> list = checkNewItem(parserListModels, results);
+            App.getInstance().bus().send(new SizeNewArticleEvent.Message(list.size()));
             if (list.size() != 0) {
                 msg("new article: " + list.size());
                 insertData(list);
@@ -79,6 +82,7 @@ public class DataLoader {
                 .forEach(value -> {
                     Timber.d("Insert Article: " + value.getArtTitle());
                     realm.executeTransactionAsync(r -> r.copyToRealmOrUpdate(value), () -> Timber.d("Inserted: " + value.getArtTitle()), error -> Timber.e("Inserted Error: " + value.getArtTitle() + " " + error.toString()));
+
                 });
 
 

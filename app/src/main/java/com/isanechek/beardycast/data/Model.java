@@ -65,10 +65,10 @@ public class Model {
     public Observable<RealmResults<Article>> loadMoreArticleList() {
         String url = null;
 
-        url = selectedSection + getPageLoadedCount(selectedSection);
+        url = getPageLoadedCount("home");
         /*Пока так*/
-        LogUtil.logD("Load More Article List", "Url -->> " + url);
-        savePageLoadedCount(selectedSection);
+        LogUtil.logE("Load More Article List", "Url -->> " + url);
+        savePageLoadedCount("home");
 
         return repository.getListArticle(url, false);
     }

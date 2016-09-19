@@ -2,6 +2,7 @@ package com.isanechek.beardycast.ui.details;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
@@ -86,8 +87,15 @@ public class DetailsArticleActivity extends MvpActivity<DetailsArticlePresenter>
         Timber.tag(TAG);
         initWidgets();
         appBarLayout.addOnOffsetChangedListener(this);
+        Timber.d("onCreate");
 
+        Intent intent = getIntent();
+        Uri uri = intent.getData();
+        id = uri.toString();
         id = getIntent().getStringExtra(ARTICLE_ID);
+        Timber.d("test id: " + id);
+
+
         if (!TextUtils.isEmpty(id) || id != null) {
             presenter.loadData(id);
         } else {
